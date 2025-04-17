@@ -1,6 +1,6 @@
 <template>
     <div class="chat-container">
-      <div class="chat-box">
+      <div class="chat-box s">
         <div v-for="(message, index) in messages" :key="index" class="message">
           {{ message }}
         </div>
