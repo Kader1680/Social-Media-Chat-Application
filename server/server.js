@@ -36,11 +36,17 @@ const server = http.createServer(app);
 require('dotenv').config();
 
 
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // allow requests from your Vue app
+  credentials: true               // if you're sending cookies/auth headers
+}));
+
 // Middleware
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/', authRoutes);
 
 // Example of a protected route
 const { protect } = require('./controller/authController');
