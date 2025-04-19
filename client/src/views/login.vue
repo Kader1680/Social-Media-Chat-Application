@@ -12,15 +12,15 @@
 
         <div>
           <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
-          <div class="mt-2">
-            <input v-model="email" type="email" id="email" required class="block w-full rounded-md px-3 py-1.5" />
+          <div class="mt-2 bottom-3">
+            <input style="border: 2px solid blue;" v-model="email" type="email" id="email" required class="block w-full rounded-md px-3 py-1.5 bottom-1 border-warning" />
           </div>
         </div>
 
         <div>
           <label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
           <div class="mt-2">
-            <input v-model="password" type="password" id="password" required class="block w-full rounded-md px-3 py-1.5" />
+            <input style="border: 2px solid blue;" v-model="password" type="password" id="password" required class="block w-full rounded-md px-3 py-1.5" />
           </div>
         </div>
 

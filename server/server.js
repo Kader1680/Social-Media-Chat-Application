@@ -48,6 +48,8 @@ app.use(express.json());
 // Routes
 app.use('/', authRoutes);
 
+// app.use('/api/auth', authRoutes); 
+
 // Example of a protected route
 const { protect } = require('./controller/authController');
 

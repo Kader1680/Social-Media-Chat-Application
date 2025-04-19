@@ -1,7 +1,7 @@
 
 <template>
 
-<nav style="background-color: #0000b3;">
+<nav style="background-color: rgb(0, 0, 109);">
   <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
     <div class="relative flex h-16 items-center justify-between">
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -28,16 +28,18 @@
         </button>
       </div>
       <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex shrink-0 items-center">
-          <img class="h-8 w-auto" src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+        <div style="font-size: 44px;" class="flex shrink-0 items-center text-white font-serif font-bold fs-2">
+          linkroad
         </div>
-        <div class="hidden sm:ml-6 sm:block">
+        <div class="hidden sm:ml-6 sm:block pt-3">
+
+
           <div class="flex space-x-4">
             <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-            <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Home</a>
+            <a href="/" class="rounded-md px-3 py-2 text-sm  text-white font-bold">Home</a>
 
-            <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Message</a>
-            <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Notifications</a>
+            <a href="/chat" class="rounded-md px-3 py-2 text-sm  text-white font-bold">Message</a>
+            <a href="/notification" class="rounded-md px-3 py-2 text-sm  text-white font-bold">Notifications</a>
           </div>
         </div>
       </div>
@@ -52,13 +54,16 @@
 
         <!-- Profile dropdown -->
         <div class="relative ml-3">
-          <div>
+
+         <a class="text-white font-bold" href="/profil">profil</a>
+
+          <!-- <div>
             <button type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
               <span class="absolute -inset-1.5"></span>
               <span class="sr-only">Open user menu</span>
               <img class="size-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
             </button>
-          </div>
+          </div> -->
 
           <!--
             Dropdown menu, show/hide based on menu state.
