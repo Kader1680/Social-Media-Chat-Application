@@ -52,6 +52,11 @@ const handleSubmit = async () => {
       password: password.value
     })
 
+    
+    localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.data.user));
+
+
     if (res.data.status === 'success') {
      
       router.push('/')

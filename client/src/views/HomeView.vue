@@ -4,6 +4,17 @@
 
 <main class="max-w-7xl mx-auto flex flex-col md:flex-row mt-6 px-4 gap-6">
     
+
+  <n-space vertical>
+    <n-input v-model:value="name" placeholder="Enter your name" />
+    <n-button type="primary" @click="submit">Submit</n-button>
+
+    <n-card title="Welcome" :segmented="true">
+      <p>Hello, {{ name }}!</p>
+    </n-card>
+  </n-space>
+
+
     <!-- Sidebar -->
     <aside class="w-full md:w-1/4 hidden md:block">
       <div class="bg-white rounded-lg p-4 shadow-sm">
@@ -64,3 +75,16 @@
 
 
 </template>
+
+
+ 
+
+<script setup>
+import { ref } from 'vue'
+
+const name = ref('')
+
+function submit() {
+  console.log('Submitted name:', name.value)
+}
+</script>

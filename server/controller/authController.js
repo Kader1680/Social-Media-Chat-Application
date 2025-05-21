@@ -12,7 +12,6 @@ exports.register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(400).json({
@@ -69,6 +68,7 @@ exports.login = async (req, res, next) => {
     }
 
     const token = signToken(user._id);
+    
 
     res.status(200).json({
       status: 'success',
@@ -119,6 +119,30 @@ exports.protect = async (req, res, next) => {
     res.status(401).json({
       status: 'fail',
       message: err.message
+    });
+  }
+};
+
+
+
+// get all user from the databases;
+
+
+
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      status: 'success',
+      results: users.length,
+      data: {
+        users,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err,
     });
   }
 };

@@ -10,13 +10,9 @@ import Navbar from "./components/navbar.vue"; // Import your Navbar.vue
 <template>
  
   <Navbar />
-    
   <RouterView />
 </template>
 
-<script>
-
-</script>
-
+ 
 
 <style scoped></style>
