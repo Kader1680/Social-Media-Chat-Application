@@ -5,16 +5,7 @@
 <main class="max-w-7xl mx-auto flex flex-col md:flex-row mt-6 px-4 gap-6">
     
 
-  <n-space vertical>
-    <n-input v-model:value="name" placeholder="Enter your name" />
-    <n-button type="primary" @click="submit">Submit</n-button>
-
-    <n-card title="Welcome" :segmented="true">
-      <p>Hello, {{ name }}!</p>
-    </n-card>
-  </n-space>
-
-
+ 
     <!-- Sidebar -->
     <aside class="w-full md:w-1/4 hidden md:block">
       <div class="bg-white rounded-lg p-4 shadow-sm">
@@ -27,12 +18,11 @@
       </div>
     </aside>
 
-    <!-- Feed -->
     <section class="flex-1 space-y-6">
 
 
 
-      <!-- Post -->
+      
       <div class="bg-white p-4 rounded-lg shadow-sm space-y-3">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-gray-300 rounded-full">

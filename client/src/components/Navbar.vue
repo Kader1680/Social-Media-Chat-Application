@@ -6,14 +6,10 @@
 
     <ul class="navbar-links">
       <li><router-link to="/">Home</router-link></li>
-      <!-- <li></li>
-      <li></li>
-      <li></li> -->
-      <!-- <li></li> -->
-      
+  
       <div v-if="isAuthenticated">
         <router-link to="/friends">Friends</router-link>       
-        <router-link to="/messages">Messages</router-link>
+        <router-link to="/chat">Messages</router-link>
         <router-link to="/notifications">Notifications</router-link>
         <router-link to="/profile">Profile</router-link>
         <button @click="logout">Logout</button>

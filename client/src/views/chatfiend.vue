@@ -1,3 +1,74 @@
+<style scoped>
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+}
+
+.chat-header {
+  margin-bottom: 1rem;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid #eee;
+  background-color: #f9f9f9;
+}
+
+.message {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.message-sent {
+    background-color: #0013ffc7;
+    align-self: flex-end;
+    margin-left: 20rem;
+    color: white;
+}
+
+.message-received {
+  background-color: #e8e8e8d6;
+  align-self: flex-start;
+}
+
+ 
+.chat-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.chat-form button {
+    padding: 0.5rem 1rem;
+    background-color: #0013ffc7;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 15%;
+    border-radius: 8px;
+}
+
+
+</style>
+
+
+
+
 <template>
   <div class="chat-container">
     <div class="chat-header">
@@ -8,10 +79,10 @@
       <div
         v-for="msg in messages"
         :key="msg.createdAt"
-        :class="msg.senderId === userId ? 'message-sent' : 'message-received'"
+        :class="msg.sender === userId ? 'message-sent' : 'message-received'"
         class="message"
       >
-        <p><strong>{{ msg.senderId === userId ? 'You' : `${friendId}` }} </strong> <br> {{ msg.content }}</p>
+        <p><strong>{{ msg.sender === userId ? 'You' : `${friendId}` }} </strong> <br>  {{ msg.content }}</p>
       </div>
     </div>
 
@@ -96,63 +167,3 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 90vh;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  max-width: 700px;
-  margin: auto;
-  background: #fff;
-}
-
-.chat-header {
-  margin-bottom: 1rem;
-}
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  border: 1px solid #eee;
-  background-color: #f9f9f9;
-}
-
-.message {
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  max-width: 70%;
-}
-
-.message-sent {
-  background-color: #d1e7dd;
-  align-self: flex-end;
-}
-
-.message-received {
-  background-color: #f8d7da;
-  align-self: flex-start;
-}
-
-.chat-form {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.chat-form input {
-  flex: 1;
-  padding: 0.5rem;
-}
-
-.chat-form button {
-  padding: 0.5rem 1rem;
-  background-color: blue;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-</style>
