@@ -1,11 +1,9 @@
 <template>
   <div class="chat-container">
-    <!-- Chat Header -->
     <div class="chat-header">
       <h2>Chat with Friend: {{ friendId }}</h2>
     </div>
 
-    <!-- Messages Display -->
     <div class="chat-messages">
       <div
         v-for="msg in messages"
@@ -13,11 +11,10 @@
         :class="msg.senderId === userId ? 'message-sent' : 'message-received'"
         class="message"
       >
-        <p><strong>{{ msg.senderId === userId ? 'You' : 'Friend' }}:</strong> {{ msg.message }}</p>
+        <p><strong>{{ msg.senderId === userId ? 'You' : `${friendId}` }} </strong> <br> {{ msg.content }}</p>
       </div>
     </div>
 
-    <!-- Message Form -->
     <form @submit.prevent="handleSendMessage" class="chat-form">
       <input
         v-model="newMessage"
@@ -40,13 +37,21 @@ const newMessage = ref('');
 const route = useRoute();
 
 const friendId = route.params.friendId;
+
 const userId = JSON.parse(localStorage.getItem('user'))?.id || '';
 
-// Load previous messages between user and friend
+// console.log(userId)
+
 const loadMessages = async () => {
   try {
-    const response = await axios.get(`http://localhost:3000/messages/${friendId}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    const response = await axios.get(`http://localhost:3000/chat/${friendId}`, {
+      headers: { 
+        
+        // Authorization: `Bearer ${localStorage.getItem('token')}`
+        "x-user-id": userId
+
+
+       }
     });
     messages.value = response.data;
   } catch (error) {
@@ -54,27 +59,35 @@ const loadMessages = async () => {
   }
 };
 
-// Send new message
+ 
 const handleSendMessage = async () => {
-  if (!newMessage.value.trim()) return;
+  
 
   const messageData = {
-    senderId: userId,
-    receiverId: friendId,
-    message: newMessage.value
+    sender: userId,
+    receiver: route.params.friendId,
+    content: newMessage.value.trim()
   };
 
   try {
-    // Send message to backend
-    await axios.post('http://localhost:3000/messages', messageData, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    const response = await axios.post(`http://localhost:3000/chat/${friendId}`, messageData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
     });
 
-    // Add to local messages array
-    messages.value.push({ ...messageData, createdAt: new Date() });
+    messages.value.push(response.data);
     newMessage.value = '';
+    
+    
+    setTimeout(() => {
+      const messagesContainer = document.querySelector('.messages');
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }, 50);
   } catch (error) {
-    console.error('Failed to send message:', error);
+    console.error('Error sending message:', error);
   }
 };
 

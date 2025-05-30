@@ -27,7 +27,7 @@ const router = createRouter({
     ,
 
     {
-      path: '/chat/:friend',
+      path: '/chat/:friendId',
       name: 'chatfiend',
       component: () => chatfiend,
     }

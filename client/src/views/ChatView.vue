@@ -1,82 +1,3 @@
-<style>
-.messenger-container {
-  display: flex;
-  height: 100vh;
-}
-
-.friends-list {
-  width: 25%;
-  background-color: #f0f0f0;
-  padding: 1rem;
-  overflow-y: auto;
-  border-right: 1px solid #ccc;
-}
-
-.friends-list ul {
-  list-style: none;
-  padding: 0;
-}
-
-.friends-list li {
-  padding: 0.5rem;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  align-items: center;
-}
-
-.friends-list li  img{
- 
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-
-.friends-list li:hover {
-  background-color: #e0e0e0;
-}
-
-.chat-area {
-  flex: 1;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-}
-
-.message {
-  margin: 0.5rem 0;
-}
-
-.message-input {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.message-input input {
-  flex: 1;
-  padding: 0.5rem;
-}
-
-.message-input button {
-  padding: 0.5rem 1rem;
-  background-color: blue;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-.friends-list .allfriend{
-  color: "#0036f5";
-}
-
-</style>
 <template>
   <div class="messenger-container">
     <div class="friends-list">
@@ -187,7 +108,7 @@ const handleSendMessage = async () => {
   };
 
   try {
-    const response = await axios.post('http://localhost:3000/api/messages', messageData, {
+    const response = await axios.post('http://localhost:5173/chat/:friendId', messageData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -196,7 +117,7 @@ const handleSendMessage = async () => {
     messages.value.push(response.data);
     newMessage.value = '';
     
-    // Scroll to bottom of messages
+    
     setTimeout(() => {
       const messagesContainer = document.querySelector('.messages');
       if (messagesContainer) {
