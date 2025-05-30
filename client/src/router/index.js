@@ -4,6 +4,7 @@ import ChatView from '../views/ChatView.vue'
 import Register from '@/views/register.vue'
 import Login from '@/views/login.vue'
 import Profil from '@/views/profil.vue'
+import chatfiend from '../views/chatfiend.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,8 +24,15 @@ const router = createRouter({
       name: 'ChatView',
       component: () => ChatView,
     }
-
     ,
+
+    {
+      path: '/chat/:friend',
+      name: 'chatfiend',
+      component: () => chatfiend,
+    }
+    ,
+
     {
       path: '/register',
       name: 'register',

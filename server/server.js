@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const authRoutes = require('./router/authRouter');
+const messageRouter = require('./router/messageRouter');
 const connectDB = require("./conf/db")
 connectDB();
 const app = express();
@@ -17,10 +18,6 @@ app.use(cors({
 // Middleware
 app.use(express.json());
 
-// Routes
-app.use('/', authRoutes);
- 
- 
 // Example of a protected route
 const { protect } = require('./controller/authController');
 
@@ -32,16 +29,11 @@ app.get('/profile', protect, (req, res) => {
 });
 
 
+// Routes
+app.use('/', authRoutes);
 
-// const messageRoutes = require('./router/messageRouter');
-// app.use('/messages', messageRoutes);
-
-
-
-
-
-
-
+app.use('/', messageRouter);
+ 
 
 
 
