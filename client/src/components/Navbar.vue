@@ -11,11 +11,11 @@
         <router-link to="/friends">Friends</router-link>       
         <router-link to="/chat">Messages</router-link>
         <router-link to="/notifications">Notifications</router-link>
-        <router-link to="/profile">Profile</router-link>
+        <router-link to="/profil">Profile</router-link>
         <button @click="logout">Logout</button>
       </div>
-      <div style="display: flex;" v-else>
-        <li><router-link to="/login">Login</router-link></li>
+      <div v-else>
+        <li style="margin-right: 1rem;"><router-link to="/login" >Login</router-link></li>
         
         <li style="margin-left: 1rem;">
           <router-link to="/register">register</router-link>
@@ -53,6 +53,7 @@ const logout = () => {
   font-weight: bold;
   font-size: 1.5rem;
   text-decoration: none;
+  
 }
 
 .navbar-links {
@@ -74,5 +75,8 @@ const logout = () => {
 .navbar-links li button:hover,
 .navbar-links li a:hover {
   color: #00bfff;
+}
+ul a{
+  margin-left: 1rem;
 }
 </style>

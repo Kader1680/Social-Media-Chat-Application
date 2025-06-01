@@ -13,4 +13,4 @@ const ChatShema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model("ChatShema", ChatShema)
+module.exports = mongoose.model("Chat", ChatShema)

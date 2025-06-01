@@ -1,200 +1,127 @@
 <template>
-    <div class="bg-gray-100">
-      <div class="container mx-auto py-8">
-        <div class="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
-          <!-- Sidebar -->
-          <div class="col-span-4 sm:col-span-3">
-            <div class="bg-white shadow rounded-lg p-6">
-              <div class="flex flex-col items-center">
-                <img
-                  src="https://randomuser.me/api/portraits/men/94.jpg"
-                  alt="Profile"
-                  class="w-32 h-32 bg-gray-300 rounded-full mb-4 shrink-0"
-                />
-                <h1 class="text-xl font-bold">John Doe</h1>
-                <p class="text-gray-700">Software Developer</p>
-                <div class="mt-6 flex flex-wrap gap-4 justify-center">
-                  <a href="https://example.com" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                    complete profile
-                  </a>
-                  <a href="https://example.com" class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded">
-                    Resume
-                  </a>
-                </div>
-              </div>
-              <hr class="my-6 border-t border-gray-300" />
-              <div class="flex flex-col">
-                <span class="text-gray-700 uppercase font-bold tracking-wider mb-2">Skills</span>
-                <ul class="list-disc list-inside space-y-1 text-gray-800">
-                  <li>JavaScript</li>
-                  <li>React</li>
-                  <li>Node.js</li>
-                  <li>HTML/CSS</li>
-                  <li>Tailwind CSS</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-  
-          <!-- Main Content -->
-          <div class="col-span-4 sm:col-span-9">
-            <div class="bg-white shadow rounded-lg p-6">
-              <h2 class="text-xl font-bold mb-4">About Me</h2>
-              <p class="text-gray-700 mb-6">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus est vitae tortor ullamcorper,
-                ut vestibulum velit convallis. Aenean posuere risus non velit egestas suscipit. Nunc finibus vel ante
-                id euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
-                Aliquam erat volutpat. Nulla vulputate pharetra tellus, in luctus risus rhoncus id.
-              </p>
-  
-             
+  <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <aside class="md:col-span-1 bg-white p-4 rounded-lg shadow">
+      <div class="text-center">
+        <img
+          :src="user.profilePicture || defaultProfile"
+          alt="Profile"
+          class="w-32 h-32 rounded-full mx-auto object-cover"
+        />
+        <input type="file" @change="handleImageUpload" class="mt-2" />
+        <h2 class="text-xl font-bold mt-4">{{ user.name }}</h2>
+        <p class="text-gray-500">{{ user.email }}</p>
+      </div>
 
-  
+      <div class="mt-6 space-y-2 text-sm">
+        <p><strong>Home:</strong> {{ user.home || 'N/A' }}</p>
+        <p><strong>Live:</strong> {{ user.live || 'N/A' }}</p>
+        <p><strong>Work:</strong> {{ user.work || 'N/A' }}</p>
+        <p><strong>Birth:</strong> {{ user.birth || 'N/A' }}</p>
+      </div>
 
+      <form @submit.prevent="saveProfile" class="mt-4 space-y-2">
+        <input v-model="user.home" placeholder="Home" class="input" />
+        <input v-model="user.live" placeholder="Live" class="input" />
+        <input v-model="user.work" placeholder="Work" class="input" />
+        <input v-model="user.birth" placeholder="Birth" type="date" class="input" />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Save</button>
+      </form>
+    </aside>
 
-              <div class="bg-white shadow rounded-lg p-6">
-  <h2 class="text-xl font-bold mb-4">Create a Post</h2>
-  <form @submit.prevent="submitPost" class="space-y-4">
-    <textarea
-      v-model="newPostContent"
-      rows="4"
-      placeholder="What's on your mind?"
-      class="w-full border rounded-lg p-3 resize-none"
-      required
-    ></textarea>
-    
-    <input
-      type="file"
-      accept="image/*"
-      @change="onPostImageChange"
-    />
-    
-    <button
-      type="submit"
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-    >
-      Publish
-    </button>
-  </form>
-</div>
-
-
-
-
-
-  <div class="space-y-10">
-
-<!-- Friends Section -->
-<div class="bg-white shadow rounded-lg p-6">
-  <h2 class="text-xl font-bold mb-4">My Friends</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-    <div
-      v-for="friend in friends"
-      :key="friend.id"
-      class="flex flex-col items-center text-center"
-    >
-      <img
-        :src="friend.avatar"
-        :alt="friend.name"
-        class="w-50 h-50 mb-2 object-cover"
-      />
-      <span class="text-gray-800 font-medium">{{ friend.name }}</span>
-    </div>
-  </div>
-</div>
-
-
- 
-
-
-<!-- Uploaded Pictures Section -->
-<div class="bg-white shadow rounded-lg p-6">
-  <h2 class="text-xl font-bold mb-4">My Uploaded Pictures</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-    <div
-      v-for="(photo, index) in uploadedPhotos"
-      :key="index"
-      class="relative"
-    >
-      <img
-        :src="photo"
-        class="w-full h-40 object-cover rounded-lg border"
-      />
-    </div>
-  </div>
-</div>
-
-<!-- Upload Form -->
-<div class="bg-white shadow rounded-lg p-6">
-  <h2 class="text-xl font-bold mb-4">Upload New Picture</h2>
-  <form @submit.prevent="handleUpload">
-    <input
-      type="file"
-      accept="image/*"
-      @change="onFileChange"
-      class="mb-4"
-    />
-    <button
-      type="submit"
-      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-    >
-      Upload
-    </button>
-  </form>
-</div>
-
-</div>
-
-
-            </div>
+    <!-- Main Content -->
+    <main class="md:col-span-3 space-y-6">
+      <!-- Posts -->
+      <section class="bg-white p-4 rounded-lg shadow">
+        <h1>{{   user_profil  }}</h1>
+        
+        <h3 class="text-xl font-bold mb-4">Posts</h3>
+        <div v-if="posts.length === 0" class="text-gray-500">No posts yet.</div>
+        <div v-else class="space-y-4">
+          <div v-for="post in posts" :key="post.id" class="border p-3 rounded">
+            <p class="font-semibold">{{ user.name }}</p>
+            <p class="text-gray-700">{{ post.content }}</p>
+            <p class="text-xs text-gray-400">{{ formatDate(post.createdAt) }}</p>
           </div>
         </div>
-      </div>
-    </div>
-  </template>
-  
+      </section>
 
+      <!-- Friends -->
+      <section class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-xl font-bold mb-4">Friends</h3>
+        <div v-if="friends.length === 0" class="text-gray-500">No friends yet.</div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div
+            v-for="friend in friends"
+            :key="friend.id"
+            class="text-center bg-gray-50 p-3 rounded-lg shadow-sm"
+          >
+            <img
+              :src="friend.profilePicture || defaultProfile"
+              class="w-20 h-20 rounded-full mx-auto object-cover"
+              alt="Friend"
+            />
+            <p class="mt-2 text-sm font-semibold">{{ friend.name }}</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</template>
 
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const defaultProfile = 'https://www.gravatar.com/avatar?d=mp&s=200';
 
  
+// Dummy data
+const user = ref({
+  name: 'John Doe',
+  email: 'john@example.com',
+  profilePicture: '',
+  home: '',
+  live: '',
+  work: '',
+  birth: ''
+});
 
-  <script>
-  export default {
-  data() {
-    return {
-      friends: [
-        { id: 1, name: "Alice", avatar: "https://randomuser.me/api/portraits/women/1.jpg" },
-        { id: 2, name: "Bob", avatar: "https://randomuser.me/api/portraits/men/2.jpg" },
-        { id: 3, name: "Charlie", avatar: "https://randomuser.me/api/portraits/men/3.jpg" },
-        { id: 4, name: "Diana", avatar: "https://randomuser.me/api/portraits/women/4.jpg" },
-        { id: 5, name: "Eli", avatar: "https://randomuser.me/api/portraits/men/5.jpg" },
-        { id: 6, name: "Fiona", avatar: "https://randomuser.me/api/portraits/women/6.jpg" },
-      ],
-      uploadedPhotos: [
-        "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=400&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-        "https://source.unsplash.com/random/400x300?sig=1",
-        "https://source.unsplash.com/random/400x300?sig=2",
-        "https://source.unsplash.com/random/400x300?sig=3",
-        "https://source.unsplash.com/random/400x300?sig=4"
-      ],
-      selectedFile: null,
+const posts = ref([
+  { id: 1, content: 'Hello, this is my first post!', createdAt: new Date() },
+  { id: 2, content: 'Loving Vue 3 and Tailwind!', createdAt: new Date() },
+]);
+
+const friends = ref([
+  { id: 1, name: 'Alice', profilePicture: '' },
+  { id: 2, name: 'Bob', profilePicture: '' },
+  { id: 3, name: 'Charlie', profilePicture: '' },
+]);
+
+const handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      user.value.profilePicture = reader.result;
     };
-  },
-  methods: {
-    onFileChange(e) {
-      this.selectedFile = e.target.files[0];
-    },
-    handleUpload() {
-      if (this.selectedFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.uploadedPhotos.unshift(e.target.result);
-        };
-        reader.readAsDataURL(this.selectedFile);
-        this.selectedFile = null;
-      }
-    },
-  },
+    reader.readAsDataURL(file);
+  }
 };
-  </script>
+
+const saveProfile = () => {
+  console.log('Profile saved', user.value);
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString();
+};
+</script>
+
+<style scoped>
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+</style>

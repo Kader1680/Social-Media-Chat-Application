@@ -4,6 +4,8 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const authRoutes = require('./router/authRouter');
 const messageRouter = require('./router/messageRouter');
+const profileRouter = require('./router/profileRouter');
+const postRouter = require('./router/postRouter');
 const connectDB = require("./conf/db")
 connectDB();
 const app = express();
@@ -21,18 +23,22 @@ app.use(express.json());
 // Example of a protected route
 const { protect } = require('./controller/authController');
 
-app.get('/profile', protect, (req, res) => {
-  res.status(200).json({
-    message: 'You are logged in!',
-    user: req.user
-  });
-});
+// app.get('/profile', protect, (req, res) => {
+//   res.status(200).json({
+//     message: 'You are logged in!',
+//     user: req.user
+//   });
+// });
 
 
 // Routes
 app.use('/', authRoutes);
 
 app.use('/', messageRouter);
+
+
+app.use('/', profileRouter);
+app.use('/', postRouter);
  
 
 
