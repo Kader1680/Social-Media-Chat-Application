@@ -8,6 +8,8 @@ const profileRouter = require('./router/profileRouter');
 const postRouter = require('./router/postRouter');
 const connectDB = require("./conf/db")
 connectDB();
+const path = require('path');
+
 const app = express();
 const server = http.createServer(app);
 require('dotenv').config();
@@ -40,6 +42,7 @@ app.use('/', messageRouter);
 app.use('/', profileRouter);
 app.use('/', postRouter);
  
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 

@@ -1,27 +1,41 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../model/User');
 const Post = require('../model/Post');
 
-router.post('/', async (req, res)=>{
-   try {
-    const { content, id_user } = req.body;
-    const newpost= new Post({ id_user, content });
-    await newpost.save();     
+const multer = require('multer');
+ 
+// Configure multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+const upload = multer({ storage });
 
-    res.status(201).json(newpost);
-    res.redirect("/")
-  } catch (error) {
-    console.error(error); 
-    res.status(500).json({ message: 'Error create post' });
+
+router.post('/', upload.single('image'), async (req, res) => {
+  try {
+    const newPost = new Post({
+      content: req.body.content,
+      media: `/uploads/${req.file.filename}`, // store path
+    });
+
+    await newPost.save();
+    res.status(201).json({ status: 'success', post: newPost });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
   }
-})
+});
 
 
 router.get('/', async (req, res)=>{
    try {
     const allposts= await Post.find();
+    // const user = await User.findById(allposts.id_user);
     res.status(200).json(allposts);
+    // res.render(user)
   } catch (error) {
     console.error(error); 
     res.status(500).json({ message: 'Error fetch post' });
