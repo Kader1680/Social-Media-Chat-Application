@@ -9,11 +9,17 @@ img, video {
 .reactions div .fa-comment{
   margin-right: 1rem;
 }
+.items li{
+  color: #004182;
+}
+.items li i{
+  color: black;
+}
 </style>
 <template>
 <main class="max-w-7xl mx-auto flex flex-col md:flex-row mt-6 px-4 gap-6">
     <aside class="w-full md:w-1/4 hidden md:block">
-      <div class="bg-white rounded-lg p-4 shadow-sm">
+      <div class="bg-gray-100  rounded-lg p-4 shadow-sm">
         <h2 class="font-semibold mb-3">Friends</h2>
         <ul class="space-y-2">
           <li class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-300 rounded-full"></div>ahmed li</li>
@@ -30,7 +36,7 @@ img, video {
 
 
 
-    <form  @submit.prevent="submitPost" class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow space-y-6">
+    <form  @submit.prevent="submitPost" class="max-w-2xl mx-auto p-6 bg-gray-100  rounded-2xl shadow space-y-6">
     <h2 class="text-2xl font-bold text-gray-800">Create a New Post</h2>
 
     <textarea
@@ -51,7 +57,7 @@ img, video {
         type="file"
         accept="image/*,video/*"
         @change="handleFileUpload"
-        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#00418278] file:text-[#004182] hover:file:bg-blue-200"
       />
     </div>  
 
@@ -66,7 +72,7 @@ img, video {
     <div class="text-right">
       <button
         type="submit"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200"
+        class="bg-[#004182] text-white font-semibold px-6 py-2 rounded-lg transition duration-200"
       >
         Post
       </button>
@@ -78,12 +84,13 @@ img, video {
 
 
 
-      <div v-for="(post, index) in allposts" :key="index" class="p-4 bg-white rounded-xl shadow">
+      <div v-for="(post, index) in allposts" :key="index" class="p-4 bg-gray-100 rounded-xl shadow">
           <div style="justify-content: space-between;" class="flex justify-content-between">
-            <h3 c>{{ post.id_user }}</h3>
-            <div>
-              <i class="fa-solid fa-pen"></i>
-              <i class="fa-solid fa-x ms-3"></i>
+            <h3>{{ post.id_user }}</h3>
+            <div class="space-x-2">
+                 <router-link :to="`/post/edit/${post._id}`" class="text-[#004182] hover:underline">Edit</router-link>
+                 <button @click="deletePost(post._id)" class="text-red-500 hover:underline">Delete</button>
+                 
             </div>
           </div>
           <p class="text-gray-800 mb-2">{{ post.content }} </p>
@@ -105,7 +112,11 @@ img, video {
 
           <div class="reactions flex align-items-center justify-content-between">
             <div>
-              <i style="font-size: 25px;" class="fa-solid fa-thumbs-up"></i>
+                
+     
+                  
+              <i @click="likePost(post._id)"  style="font-size: 25px;" class="fa-solid fa-thumbs-up"></i>
+
               <i style="font-size: 25px; margin-right: 1rem;" class="fa-solid fa-comment"></i>
             </div>
             <i style="font-size: 25px;"  class="fa-solid fa-share"></i>
@@ -123,9 +134,9 @@ img, video {
 
 
      <aside class="w-full md:w-1/4 hidden md:block">
-      <div class="bg-white rounded-lg p-4 shadow-sm">
+      <div class="bg-gray-100  rounded-lg p-4 shadow-sm">
         <h2 class="font-semibold mb-3"></h2>
-        <ul class="space-y-2">
+        <ul class="space-y-2 items">
           <li class="flex items-center gap-2"><i class="fa-solid fa-bookmark"></i> saved items</li>
           <li class="flex items-center gap-2"><i class="fa-brands fa-youtube"></i> reels & vedio</li>
           <li class="flex items-center gap-2"><i class="fa-solid fa-user-group"></i>groups</li>
@@ -169,7 +180,6 @@ const submitPost = async () => {
   }
 };
 
-
 const handleFileUpload = (event) => {
   media.value = event.target.files[0];
 
@@ -201,6 +211,36 @@ const fetchPosts = async () => {
 onMounted(() => {
   fetchPosts();
 });
+
+const deletePost = async (postId) => {
+  const confirmDelete = confirm("Are you sure you want to delete this post?");
+  if (!confirmDelete) return;
+
+  try {
+    await axios.delete(`http://localhost:3000/post/${postId}`);
+    allposts.value = allposts.value.filter(post => post._id !== postId);
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    alert("Failed to delete the post.");
+  }
+};
+
+const likePost = async (postId) => {
+  try {
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+
+    const res = await axios.post('http://localhost:3000/', {
+      id_post: postId,
+      id_user: userId,
+    });
+
+    console.log("Liked successfully", res.data.post);
+  } catch (err) {
+    console.error("Error liking post:", err.response?.data?.message || err.message);
+  }
+};
+
+
 
 
 </script>

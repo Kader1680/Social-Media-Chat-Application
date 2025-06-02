@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <div class="navbar-logo">
-      <router-link to="/">🔵 SocialApp</router-link>
+      <router-link to="/">🔵 Pincom</router-link>
     </div>
 
     <ul class="navbar-links">
@@ -43,7 +43,7 @@ const logout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #121212;
+  background-color: #004182;
   padding: 1rem 2rem;
   color: white;
 }

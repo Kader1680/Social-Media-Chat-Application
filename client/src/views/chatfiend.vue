@@ -30,7 +30,7 @@
 }
 
 .message-sent {
-    background-color: #0013ffc7;
+    background-color: #004182b0;
     align-self: flex-end;
     margin-left: 20rem;
     color: white;
@@ -55,7 +55,7 @@
 
 .chat-form button {
     padding: 0.5rem 1rem;
-    background-color: #0013ffc7;
+    background-color: #004182;
     color: white;
     border: none;
     cursor: pointer;
@@ -93,7 +93,7 @@
         placeholder="Type your message..."
         required
       />
-      <button type="submit">Send</button>
+      <button style="background-color: #004182;" type="submit">Send</button>
     </form>
   </div>
 </template>
