@@ -120,7 +120,7 @@ onMounted(async () => {
     const profile = res.data;
    
 
-    console.log(user.value.home)
+    console.log(profile)
     user.value = {  
       // image: profile.image || '',
       home: profile.home || '',

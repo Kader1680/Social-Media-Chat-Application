@@ -2,7 +2,7 @@
 const connectDB = async () => {
    try {
       const mongoose = require("mongoose")
-      const url = 'mongodb+srv://root:0000@chatsystem.nrixo.mongodb.net/chatdb';
+         const url = 'mongodb+srv://root:0000@chatsystem.nrixo.mongodb.net/chatdb';
       mongoose.connect(url)
       .then(()=>{
       console.log("connected with mongodb")

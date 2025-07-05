@@ -8,6 +8,8 @@ const signToken = (id) => {
   });
 };
 
+ 
+
 exports.register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -68,7 +70,7 @@ exports.login = async (req, res, next) => {
     }
 
     const token = signToken(user._id);
-    
+    console.log(token)
 
     res.status(200).json({
       status: 'success',
@@ -123,26 +125,4 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-
-
-// get all user from the databases;
-
-
-
-const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find();
-    res.status(200).json({
-      status: 'success',
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+ 
