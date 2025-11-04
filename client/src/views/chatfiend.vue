@@ -99,9 +99,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import socket from '../socket';
 
 const messages = ref([]);
 const newMessage = ref('');
@@ -109,7 +110,8 @@ const route = useRoute();
 
 const friendId = route.params.friendId;
 
-const userId = JSON.parse(localStorage.getItem('user'))?.id || '';
+const _user = JSON.parse(localStorage.getItem('user')) || {};
+const userId = _user._id || _user.id || '';
 
 // console.log(userId)
 
@@ -118,8 +120,8 @@ const loadMessages = async () => {
     const response = await axios.get(`http://localhost:3000/chat/${friendId}`, {
       headers: { 
         
-        // Authorization: `Bearer ${localStorage.getItem('token')}`
-        "x-user-id": userId
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+        // "x-user-id": userId
 
 
        }
@@ -131,28 +133,45 @@ const loadMessages = async () => {
 };
 
  
+const normalizeMessage = (m) => {
+  return {
+    sender: m.sender || m.senderId,
+    receiver: m.receiver || m.receiverId,
+    content: m.content || m.message,
+    createdAt: m.createdAt || m.created_at || new Date().toISOString()
+  };
+};
+
 const handleSendMessage = async () => {
-  
+  if (!newMessage.value.trim()) return;
 
   const messageData = {
-    sender: userId,
-    receiver: route.params.friendId,
-    content: newMessage.value.trim()
+    senderId: userId,
+    receiverId: route.params.friendId,
+    message: newMessage.value.trim()
   };
 
   try {
-    const response = await axios.post(`http://localhost:3000/chat/${friendId}`, messageData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    // Emit via socket for real-time delivery and persistence (server saves)
+    if (socket && socket.connected) {
+      socket.emit('send message', messageData);
+    } else {
+      // Fallback to HTTP POST if socket disconnected
+      await axios.post(`http://localhost:3000/chat/${friendId}`, {
+        sender: messageData.senderId,
+        receiver: messageData.receiverId,
+        content: messageData.message
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+    }
 
-    messages.value.push(response.data);
+    // Optimistically add to UI
+    messages.value.push(normalizeMessage({ senderId: messageData.senderId, receiverId: messageData.receiverId, message: messageData.message }));
     newMessage.value = '';
-    
-    
+
     setTimeout(() => {
-      const messagesContainer = document.querySelector('.messages');
+      const messagesContainer = document.querySelector('.chat-messages');
       if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
       }
@@ -164,6 +183,33 @@ const handleSendMessage = async () => {
 
 onMounted(() => {
   loadMessages();
+
+  // Ensure socket is connected
+  if (socket && !socket.connected) {
+    socket.connect();
+  }
+
+  // Join room for this user
+  if (socket && userId) socket.emit('join', userId);
+
+  // Listen for incoming messages
+  socket.on('newMessage', (msg) => {
+    try {
+      const normalized = normalizeMessage(msg);
+      // Only add messages that belong to this conversation
+      if (normalized.sender === friendId || normalized.receiver === friendId) {
+        messages.value.push(normalized);
+      }
+    } catch (e) {
+      console.error('Error handling incoming socket message:', e);
+    }
+  });
+});
+
+onUnmounted(() => {
+  if (socket) {
+    socket.off('newMessage');
+  }
 });
 </script>
 

@@ -13,24 +13,17 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 require('dotenv').config();
-// Enable CORS
+
 app.use(cors({
-  origin: 'http://localhost:5173',  
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true             
 }));
-
-// Middleware
+ 
 app.use(express.json());
 
-// Example of a protected route
+ 
 const { protect } = require('./controller/authController');
 
-// app.get('/profile', protect, (req, res) => {
-//   res.status(200).json({
-//     message: 'You are logged in!',
-//     user: req.user
-//   });
-// });
 
 
 // Routes
@@ -51,3 +44,32 @@ server.listen(3000, () => {
 });
 
 
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["my-custom-header"],
+  },
+  allowEIO3: true,
+  transports: ['websocket', 'polling']
+});
+
+app.set("io", io);
+
+// Add middleware to handle optional authentication for sockets
+// If a client doesn't send a userId in handshake.auth we allow the connection
+// but do not assign socket.userId. This prevents 'Invalid user' connect_error
+io.use((socket, next) => {
+  const userId = socket.handshake?.auth?.userId;
+  if (!userId) {
+    console.warn(`Socket connected without userId: ${socket.id}`);
+    // allow connection to continue; user can emit 'join' later after login
+    return next();
+  }
+  socket.userId = userId;
+  next();
+});
+
+require("./socket")(io);
+module.exports = io;

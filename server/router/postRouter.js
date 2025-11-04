@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../model/Post');
-
-const multer = require('multer');
 const Like = require('../model/Like');
+const multer = require('multer');
 
-// Configure multer
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
@@ -15,8 +14,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Create a new post
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/post', upload.single('image'), async (req, res) => {
   try {
     const newPost = new Post({
       content: req.body.content,
@@ -31,19 +29,22 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// Get all posts
-router.get('/', async (req, res) => {
+
+router.get('/post', async (req, res) => {
   try {
     const allPosts = await Post.find();
     const alllikes = await Like.find();
-    res.status(200).json(allPosts).render("likes", {alllikes});
+
+     
+    res.status(200).json({ posts: allPosts, likes: alllikes });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching posts' });
   }
 });
 
-// Update post by ID
+
+
 router.put('/post/:id', upload.single('image'), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -61,7 +62,6 @@ router.put('/post/:id', upload.single('image'), async (req, res) => {
   }
 });
 
- 
 router.delete('/post/:id', async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
@@ -73,25 +73,12 @@ router.delete('/post/:id', async (req, res) => {
   }
 });
 
-
-
-
-router.post('/', async (req, res) => {
+router.post('/like', async (req, res) => {
   try {
     const newLike = new Like({
       id_user: req.body.id_user,
       id_post: req.body.id_post,
     });
-
-    // const existingLike = await Like.findOne({
-    //   id_user: req.body.id_user,
-    //   id_post: req.body.id_post
-    // });
-
-    // if (existingLike) {
-    //   return res.status(400).json({ message: 'Post already liked by this user' });
-    // }
-
 
     await newLike.save();
     res.status(201).json({ status: 'success', like: newLike });
@@ -99,8 +86,5 @@ router.post('/', async (req, res) => {
     res.status(500).json({ status: 'error', message: err.message });
   }
 });
-
-
- 
 
 module.exports = router;

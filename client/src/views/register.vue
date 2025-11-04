@@ -8,6 +8,10 @@
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form @submit.prevent="handleSubmit" class="space-y-6">
+
+        <div v-if="errorMessage" class="text-red-500 text-sm">
+          {{ errorMessage }}
+        </div>
         <div>
           <label for="username" class="block text-sm/6 font-medium text-gray-900">Username</label>
           <div class="mt-2 bottom-3">
@@ -48,7 +52,7 @@ const username = ref('')
 const email = ref('')
 const password = ref('')
 const router = useRouter()
-
+const errorMessage = ref('')
 const handleSubmit = async () => {
   try {
     const res = await axios.post('http://localhost:3000/register', {
@@ -58,11 +62,12 @@ const handleSubmit = async () => {
     })
 
     if (res.data.status === 'success') {
-      // ✅ Redirect to home
+     
       router.push('/')
     }
   } catch (err) {
     console.error(err.response?.data?.message || err.message)
+    errorMessage.value = 'Registration failed . Please try again.'
   }
 }
 

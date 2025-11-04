@@ -43,6 +43,7 @@ const username = ref('')
 const email = ref('')
 const password = ref('')
 const router = useRouter()
+const errorMessage = ref('')
 
 const handleSubmit = async () => {
   try {
@@ -63,6 +64,7 @@ const handleSubmit = async () => {
     }
   } catch (err) {
     console.error(err.response?.data?.message || err.message)
+    errorMessage.value = 'Login failed password or email is incorrect.'
   }
 }
 </script>

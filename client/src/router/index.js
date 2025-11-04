@@ -17,10 +17,10 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-     {
+    {
       path: '/post/edit/:id',
       name: 'editpost',
-      component: () => Editpost,
+      component: Editpost,
     }
     ,
     {
@@ -31,46 +31,46 @@ const router = createRouter({
     {
       path: '/chat',
       name: 'ChatView',
-      component: () => ChatView,
+      component: ChatView,
     }
     ,
 
     {
       path: '/chat/:friendId',
       name: 'chatfiend',
-      component: () => chatfiend,
+      component: chatfiend,
     }
     ,
 
     {
       path: '/register',
       name: 'register',
-      component: () => Register,
+      component: Register,
     }
 
     ,
     {
       path: '/login',
       name: 'login',
-      component: () => Login,
+      component: Login,
     }
     ,
     {
       path: '/profil',
       name: 'profil',
-      component: () => Profil,
+      component: Profil,
     }
     ,
     {
       path: '/friends',
       name: 'friends',
-      component: () => Friends,
+      component: Friends,
     }
      ,
     {
       path: '/notifications',
       name: 'notifications',
-      component: () => Notifications,
+      component: Notifications,
     }
   ]
 })
