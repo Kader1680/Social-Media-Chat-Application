@@ -8,78 +8,66 @@
 
       <li><router-link to="/">Home</router-link></li>
 
-      <div v-if="isAuthenticated">
-        <router-link to="/friends">Friends</router-link>
-        <router-link to="/chat">Messages</router-link>
-        <router-link to="/notifications">Notifications</router-link>
-<<<<<<< HEAD
+      <!-- SHOW WHEN AUTHENTICATED -->
+      <template v-if="isAuthenticated">
 
-        <router-link :to="`/profil/${userId}`">Profile</router-link>
+        <li><router-link to="/friends">Friends</router-link></li>
+        <li><router-link to="/chat">Messages</router-link></li>
+        <li><router-link to="/notifications">Notifications</router-link></li>
+        <li><router-link :to="`/profil/${userId}`">Profile</router-link></li>
 
-=======
-        <router-link :to="`/profil/${userId}`">Profile</router-link>
->>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
-        <button @click="logout">Logout</button>
-      </div>
+        <li>
+          <button @click="logout">Logout</button>
+        </li>
 
-      <div v-else>
-<<<<<<< HEAD
+      </template>
+
+      <!-- SHOW WHEN NOT AUTHENTICATED -->
+      <template v-else>
         <li style="margin-right: 1rem;">
           <router-link to="/login">Login</router-link>
         </li>
-
         <li style="margin-left: 1rem;">
           <router-link to="/register">Register</router-link>
         </li>
-=======
-        <li style="margin-right: 1rem;"><router-link to="/login">Login</router-link></li>
-        <li style="margin-left: 1rem;"><router-link to="/register">Register</router-link></li>
->>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
-      </div>
+      </template>
 
     </ul>
   </nav>
 </template>
 
+
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-<<<<<<< HEAD
-const user = JSON.parse(localStorage.getItem("user"));
-const userId = user?.id;
+// ✅ check token
+const isAuthenticated = computed(() => !!localStorage.getItem("token"));
 
+// ✅ get userId
+const userData = localStorage.getItem("user");
+let userId = "";
 
-const isAuthenticated = computed(() => !! localStorage.getItem('token'));
-=======
-const isAuthenticated = computed(() => !!localStorage.getItem('token'));
->>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
-
-const userId = ref('');
-const user = localStorage.getItem('user');
-if (user) {
+if (userData) {
   try {
-    userId.value = JSON.parse(user).id;
+    userId = JSON.parse(userData).id;
   } catch (err) {
-    console.error('Invalid user in localStorage:', err);
+    console.error("Invalid user in localStorage:", err);
   }
 }
 
+// ✅ logout function
 const logout = () => {
-  localStorage.removeItem('token');
-<<<<<<< HEAD
-  localStorage.removeItem("user_id");
-=======
-  localStorage.removeItem('user');
->>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
-  router.push('/login');
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  router.push("/login");
 };
 </script>
 
+
 <style scoped>
-/* your existing styles unchanged */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -116,10 +104,7 @@ const logout = () => {
 .navbar-links li a:hover {
   color: #00bfff;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
 ul a {
   margin-left: 1rem;
 }

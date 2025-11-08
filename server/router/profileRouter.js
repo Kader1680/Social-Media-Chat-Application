@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Profile = require('../model/Profile');
 const User = require('../model/User');
-});
-
+ 
 // Get profile by user ID
 router.get("/profil/:id_user", async (req, res) => {
     try {
