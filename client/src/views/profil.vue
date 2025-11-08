@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
     <!-- LEFT SIDEBAR -->
@@ -7,8 +8,17 @@
         <img
           :src="user.profilePicture || defaultProfile"
           class="w-32 h-32 rounded-full mx-auto object-cover border"
+=======
+  <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Sidebar Profile -->
+    <aside class="md:col-span-1 bg-white p-4 rounded-lg shadow">
+      <div class="text-center">
+        <img
+          :src="user.image || defaultProfile"
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
           alt="Profile"
         />
+<<<<<<< HEAD
 
         <input type="file" @change="handleImageUpload" class="mt-3 text-sm" />
 
@@ -39,6 +49,33 @@
 
         <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full">
           Save Profile
+=======
+        <input type="file" @change="handleImageUpload" class="mt-2" />
+      </div>
+
+      <div class="mt-6 space-y-2 text-sm">
+        <p><strong>Home:</strong> {{ user.home || 'Not Added' }}</p>
+        <p><strong>Live:</strong> {{ user.live || 'Not Added' }}</p>
+        <p><strong>Work:</strong> {{ user.work || 'Not Added' }}</p>
+        <p><strong>School:</strong> {{ user.school || 'Not Added' }}</p>
+        <p><strong>Gender:</strong> {{ user.gender || 'Not Added' }}</p>
+        <p><strong>Birth:</strong> {{ user.birth || 'Not Added' }}</p>
+      </div>
+
+      <form @submit.prevent="saveProfile" class="mt-4 space-y-2">
+        <input v-model="user.home" placeholder="Home" class="input" />
+        <input v-model="user.live" placeholder="Live" class="input" />
+        <input v-model="user.work" placeholder="Work" class="input" />
+        <input v-model="user.school" placeholder="School" class="input" />
+        <select v-model="user.gender" class="input">
+          <option disabled value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+        <input v-model="user.birth" type="date" class="input" placeholder="Birth" />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full">
+          Save
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
         </button>
       </form>
 
@@ -46,20 +83,30 @@
 
     <!-- MAIN CONTENT -->
     <main class="md:col-span-3 space-y-6">
+<<<<<<< HEAD
 
       <!-- POSTS SECTION -->
       <section class="bg-white p-6 rounded-xl shadow border">
         <h3 class="text-xl font-bold mb-4">My Posts</h3>
 
+=======
+      <!-- Posts -->
+      <section class="bg-white p-4 rounded-lg shadow">
+        <h3 class="text-xl font-bold mb-4">Posts</h3>
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
         <div v-if="posts.length === 0" class="text-gray-500">No posts yet.</div>
 
         <div v-else class="space-y-4">
+<<<<<<< HEAD
           <div
             v-for="post in posts"
             :key="post.id"
             class="border p-4 rounded-lg shadow-sm bg-gray-50"
           >
             <p class="font-semibold">{{ user.first_name }}</p>
+=======
+          <div v-for="post in posts" :key="post.id" class="border p-3 rounded">
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
             <p class="text-gray-700">{{ post.content }}</p>
             <p class="text-xs text-gray-400">{{ formatDate(post.createdAt) }}</p>
           </div>
@@ -91,11 +138,18 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref, onMounted } from "vue";
 import axios from "axios";
+=======
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useRoute } from 'vue-router';
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
 
 const defaultProfile = "https://www.gravatar.com/avatar?d=mp&s=200";
 
+<<<<<<< HEAD
 const user = ref(JSON.parse(localStorage.getItem("user")) || {});
 const user_id = user.value.id;
 const profile = ref({});
@@ -110,6 +164,22 @@ onMounted(async () => {
   const res = await axios.get(`http://localhost:3000/profil/${user_id}`);
   profile.value = res.data;
  
+=======
+const route = useRoute();
+const profileId = ref(route.params.id || null);
+
+const storedUser = localStorage.getItem("user");
+const userId = storedUser ? JSON.parse(storedUser).id : null;
+ 
+const user = ref({
+  image: '',
+  home: '',
+  live: '',
+  work: '',
+  school: '',
+  gender: '',
+  birth: ''
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
 });
 
 const handleImageUpload = (event) => {
@@ -123,6 +193,7 @@ const handleImageUpload = (event) => {
   reader.readAsDataURL(file);
 };
 
+<<<<<<< HEAD
  const saveProfile = async () => {
   const payload = {
     ...profile.value,
@@ -139,6 +210,72 @@ const handleImageUpload = (event) => {
 
  
 const formatDate = (date) => new Date(date).toLocaleDateString();
+=======
+onMounted(async () => {
+  
+  if (!profileId.value) {
+    console.error("Profile ID not found.");
+    return;
+  }
+
+  try {
+    const res = await axios.get(`http://localhost:3000/profil/${profileId.value}`);
+    const profile = res.data;
+   
+
+    console.log(profile)
+    user.value = {  
+      // image: profile.image || '',
+      home: profile.home || '',
+      live: profile.live || '',
+      work: profile.work || '',
+      school: profile.school || '',
+      gender: profile.gender || '',
+      birth: profile.datebirth ? profile.datebirth.slice(0, 10) : ''
+    };
+  } catch (err) {
+    console.error('Error loading profile:', err);
+  }
+});
+
+const handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      user.value.image = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const saveProfile = async () => {
+   
+  if (!userId || !profileId.value) return alert('User or profile not found.');
+
+  console.log(profileId.value)
+   
+  try {
+    await axios.put(`http://localhost:3000/profil/${profileId.value}`, {
+      home: user.value.home,
+      live: user.value.live,
+      work: user.value.work,
+      school: user.value.school,
+      gender: user.value.gender,
+      datebirth: user.value.birth,
+      // image: user.value.image
+    });
+    alert('Profile updated successfully!');
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    alert('Failed to save profile');
+  }
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString();
+};
+>>>>>>> 94099571f81f307fa066ffb7d8d6efe8fd7b58c6
 </script>
 
 <style scoped>
