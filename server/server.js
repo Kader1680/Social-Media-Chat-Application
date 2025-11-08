@@ -1,5 +1,5 @@
-const express = require('express');
 const http = require('http');
+const express = require('express');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const authRoutes = require('./router/authRouter');
@@ -32,12 +32,12 @@ app.use('/', authRoutes);
 app.use('/', messageRouter);
 
 
-app.use('/', profileRouter);
 app.use('/', postRouter);
  
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
+app.use('/', profileRouter);
 
 server.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
@@ -57,9 +57,6 @@ const io = new Server(server, {
 
 app.set("io", io);
 
-// Add middleware to handle optional authentication for sockets
-// If a client doesn't send a userId in handshake.auth we allow the connection
-// but do not assign socket.userId. This prevents 'Invalid user' connect_error
 io.use((socket, next) => {
   const userId = socket.handshake?.auth?.userId;
   if (!userId) {

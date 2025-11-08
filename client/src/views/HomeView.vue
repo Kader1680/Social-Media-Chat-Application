@@ -62,7 +62,7 @@ img, video {
     </div>  
 
     <div v-if="previewUrl" class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-      <img v-if="isImage" :src="previewUrl" class="w-full max-h-80 object-cover" />
+      <img v-if="isImageFile" :src="previewUrl" class="w-full max-h-80 object-cover" />
       <video v-else controls class="w-full max-h-80">
         <source :src="previewUrl" />
         Your browser does not support the video tag.
@@ -72,10 +72,15 @@ img, video {
     <div class="text-right">
       <button
         type="submit"
-        class="bg-[#004182] text-white font-semibold px-6 py-2 rounded-lg transition duration-200"
+        :disabled="loading"
+        class="bg-[#004182] text-white font-semibold px-6 py-2 rounded-lg transition duration-200 disabled:opacity-50"
       >
-        Post
+        {{ loading ? 'Posting...' : 'Post' }}
       </button>
+    </div>
+
+    <div v-if="error" class="text-red-500 mt-2">
+      {{ error }}
     </div>
   </form>
 
@@ -155,38 +160,78 @@ img, video {
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue';
-const content = ref('')
-const media = ref(null)
+const content = ref('');
+const media = ref(null);
+const previewUrl = ref('');
+const isImageFile = ref(true);
+const loading = ref(false);
+const error = ref(null);
 
 const submitPost = async () => {
+  if (!content.value.trim() && !media.value) {
+    alert('Please add some content or media to your post');
+    return;
+  }
+
   try {
+    loading.value = true;
+    error.value = null;
+    
     const formData = new FormData();
     formData.append('content', content.value);
-    formData.append('id_user', JSON.parse(localStorage.getItem('user')).id);
+    const user = JSON.parse(localStorage.getItem('user'));
+    formData.append('id_user', user._id || user.id);
 
     if (media.value) {
-      formData.append('image', media.value); // key must match multer's 'image'
+      formData.append('image', media.value);
     }
 
-    const res = await axios.post('http://localhost:3000', formData, {
+    const res = await axios.post('http://localhost:3000/post', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
     });
 
+    // Clear form
+    content.value = '';
+    media.value = null;
+    previewUrl.value = '';
     
+    // Add new post to list
+    if (res.data.post) {
+      allposts.value.unshift(res.data.post);
+    }
+
   } catch (err) {
-    console.error(err.response?.data?.message || err.message);
+    error.value = err.response?.data?.message || 'Failed to create post';
+    alert(error.value);
+  } finally {
+    loading.value = false;
   }
 };
 
-const handleFileUpload = (event) => {
-  media.value = event.target.files[0];
+const handleFileUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
 
-  if (media.value) {
-    previewUrl.value = URL.createObjectURL(media.value);
-    isImage.value = media.value.type.startsWith("image/");
+  // Validate file type
+  if (!file.type.match(/^(image|video)/)) {
+    alert('Please upload an image or video file');
+    event.target.value = '';
+    return;
   }
+  
+  // Validate file size (10MB max)
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File size should be less than 10MB');
+    event.target.value = '';
+    return;
+  }
+
+  media.value = file;
+  previewUrl.value = URL.createObjectURL(file);
+  isImageFile.value = file.type.startsWith('image/');
 };
 
 
@@ -200,11 +245,16 @@ const allposts = ref([]);
 
 const fetchPosts = async () => {
   try {
-    const response = await axios.get('http://localhost:3000');
-    allposts.value = response.data;
+    loading.value = true;
+    const response = await axios.get('http://localhost:3000/post');
+    // Handle both response formats
+    allposts.value = response.data.posts || response.data;
     console.log(allposts.value);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching posts:', error);
+    alert('Failed to load posts');
+  } finally {
+    loading.value = false;
   }
 };
 

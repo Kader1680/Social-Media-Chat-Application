@@ -138,8 +138,26 @@ const normalizeMessage = (m) => {
     sender: m.sender || m.senderId,
     receiver: m.receiver || m.receiverId,
     content: m.content || m.message,
-    createdAt: m.createdAt || m.created_at || new Date().toISOString()
+    createdAt: m.createdAt || m.created_at || new Date().toISOString(),
+    _id: m._id || m.id || null,
+    temp: m.temp || false
   };
+};
+
+const isSameMessage = (a, b) => {
+  if (!a || !b) return false;
+  if ((a._id && b._id) && a._id === b._id) return true;
+  if (a.content !== b.content) return false;
+  if (a.sender !== b.sender) return false;
+  if (a.receiver !== b.receiver) return false;
+  const ta = Date.parse(a.createdAt || 0);
+  const tb = Date.parse(b.createdAt || 0);
+  // consider messages within 10s as same (for optimistic vs saved)
+  return Math.abs(ta - tb) < 10000;
+};
+
+const removeMatchingTemp = (incoming) => {
+  messages.value = messages.value.filter(m => !m.temp || !isSameMessage(m, incoming));
 };
 
 const handleSendMessage = async () => {
@@ -167,7 +185,7 @@ const handleSendMessage = async () => {
     }
 
     // Optimistically add to UI
-    messages.value.push(normalizeMessage({ senderId: messageData.senderId, receiverId: messageData.receiverId, message: messageData.message }));
+    messages.value.push(normalizeMessage({ senderId: messageData.senderId, receiverId: messageData.receiverId, message: messageData.message, temp: true }));
     newMessage.value = '';
 
     setTimeout(() => {
@@ -198,6 +216,8 @@ onMounted(() => {
       const normalized = normalizeMessage(msg);
       // Only add messages that belong to this conversation
       if (normalized.sender === friendId || normalized.receiver === friendId) {
+        // Remove any matching optimistic/temp messages
+        removeMatchingTemp(normalized);
         messages.value.push(normalized);
       }
     } catch (e) {

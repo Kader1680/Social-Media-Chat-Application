@@ -30,7 +30,7 @@ router.post('/post', upload.single('image'), async (req, res) => {
 });
 
 
-router.get('/post', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const allPosts = await Post.find();
     const alllikes = await Like.find();
