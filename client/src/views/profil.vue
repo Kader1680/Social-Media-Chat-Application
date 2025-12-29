@@ -1,152 +1,215 @@
 <template>
-  <div class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
-    <!-- LEFT SIDEBAR -->
-    <aside class="md:col-span-1 bg-white p-6 rounded-xl shadow border">
-      <div class="text-center">
-        <img
-          :src="profile.profilePicture || defaultProfile"
-          class="w-32 h-32 rounded-full mx-auto object-cover border"
-          alt="Profile"
-        />
-
-        <input type="file" @change="handleImageUpload" class="mt-3 text-sm" />
-
-        <h2 class="text-xl font-bold mt-4">
-          {{ profile.first_name || "N/A" }} {{ profile.last_name || "N/A" }}
-        </h2>
-        <p class="text-gray-500">{{ user.email }}</p>
-      </div>
-
-      <div class="mt-6 space-y-2 text-sm">
-        <p><strong>Bio:</strong> {{ profile.bio || "N/A" }}</p>
-        <p><strong>Home:</strong> {{ profile.home || "N/A" }}</p>
-        <p><strong>Address:</strong> {{ profile.address || "N/A" }}</p>
-        <p><strong>Workplace:</strong> {{ profile.workplace || "N/A" }}</p>
-        <p><strong>Education:</strong> {{ profile.education || "N/A" }}</p>
-        <p><strong>Phone:</strong> {{ profile.phone || "N/A" }}</p>
-      </div>
-
-      <!-- EDIT PROFILE FORM -->
-      <form @submit.prevent="saveProfile" class="mt-6 space-y-3">
-        <input v-model="profile.first_name" placeholder="First Name" class="input" />
-        <input v-model="profile.last_name" placeholder="Last Name" class="input" />
-        <textarea v-model="profile.bio" placeholder="Bio" class="input h-20"></textarea>
-        <input v-model="profile.address" placeholder="Address" class="input" />
-        <input v-model="profile.phone" placeholder="Phone" class="input" />
-        <input v-model="profile.home" placeholder="Home" class="input" />
-        <input v-model="profile.workplace" placeholder="Workplace" class="input" />
-        <input v-model="profile.education" placeholder="Education" class="input" />
-
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full">
-          Save Profile
+  <div class="min-h-screen bg-gray-50 pb-12">
+    <div class="bg-white shadow-sm">
+      <div class="h-48 md:h-64 bg-gradient-to-r from-[#004182] to-blue-400 relative">
+        <button class="absolute bottom-4 right-4 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg backdrop-blur-md text-sm transition-all">
+          <i class="fa-solid fa-camera mr-2"></i> Edit Cover
         </button>
-      </form>
-
-      <!-- USER INFO -->
-      <div class="mt-6 space-y-2 text-sm">
-        <p><strong>Home:</strong> {{ user.home || 'Not Added' }}</p>
-        <p><strong>Live:</strong> {{ user.live || 'Not Added' }}</p>
-        <p><strong>Work:</strong> {{ user.work || 'Not Added' }}</p>
-        <p><strong>School:</strong> {{ user.school || 'Not Added' }}</p>
-        <p><strong>Gender:</strong> {{ user.gender || 'Not Added' }}</p>
-        <p><strong>Birth:</strong> {{ user.birth || 'Not Added' }}</p>
       </div>
 
-      <!-- USER FORM -->
-      <form @submit.prevent="saveProfile" class="mt-4 space-y-2">
-        <input v-model="user.home" placeholder="Home" class="input" />
-        <input v-model="user.live" placeholder="Live" class="input" />
-        <input v-model="user.work" placeholder="Work" class="input" />
-        <input v-model="user.school" placeholder="School" class="input" />
-
-        <select v-model="user.gender" class="input">
-          <option disabled value="">Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-
-        <input v-model="user.birth" type="date" class="input" />
-
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full">
-          Save
-        </button>
-      </form>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="md:col-span-3 space-y-6">
-      <!-- POSTS SECTION -->
-      <section class="bg-white p-6 rounded-xl shadow border">
-        <h3 class="text-xl font-bold mb-4">My Posts</h3>
-
-        <div v-if="posts.length === 0" class="text-gray-500">No posts yet.</div>
-
-        <div v-else class="space-y-4">
-          <div
-            v-for="post in posts"
-            :key="post.id"
-            class="border p-4 rounded-lg shadow-sm bg-gray-50"
-          >
-            <p class="font-semibold">{{ profile.first_name }}</p>
-            <p class="text-gray-700">{{ post.content }}</p>
-            <p class="text-xs text-gray-400">
-              {{ formatDate(post.createdAt) }}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- FRIENDS -->
-      <section class="bg-white p-6 rounded-xl shadow border">
-        <h3 class="text-xl font-bold mb-4">Friends</h3>
-
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          <div
-            v-for="friend in friends"
-            :key="friend.id"
-            class="text-center bg-gray-50 p-3 rounded-lg shadow-sm"
-          >
+      <div class="max-w-6xl mx-auto px-4 pb-6">
+        <div class="flex flex-col md:flex-row items-center md:items-end -mt-16 md:-mt-20 gap-6">
+          <div class="relative group">
             <img
-              :src="friend.profilePicture || defaultProfile"
-              class="w-20 h-20 rounded-full mx-auto object-cover"
+              :src="profile.profilePicture || defaultProfile"
+              class="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-white shadow-lg object-cover bg-white"
+              alt="Profile"
             />
-            <p class="mt-2 text-sm font-semibold">{{ friend.name }}</p>
+            <label class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+              <i class="fa-solid fa-camera text-white text-2xl"></i>
+              <input type="file" @change="handleImageUpload" class="hidden" />
+            </label>
+          </div>
+
+          <div class="flex-1 text-center md:text-left mb-2">
+            <h1 class="text-3xl font-extrabold text-gray-900">
+              {{ profile.first_name || "New" }} {{ profile.last_name || "User" }}
+            </h1>
+            <p class="text-gray-500 font-medium">{{ profile.bio || "No bio yet..." }}</p>
+          </div>
+
+          <div class="flex gap-3 mb-2">
+            <button @click="showEditModal = true" class="bg-[#004182] text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:bg-[#003366] transition-all">
+              <i class="fa-solid fa-pen-to-square mr-2"></i> Edit Profile
+            </button>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <aside class="space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h3 class="text-lg font-bold text-gray-900 mb-4">Intro</h3>
+          <ul class="space-y-4">
+            <li v-if="profile.workplace" class="flex items-center gap-3 text-gray-600">
+              <i class="fa-solid fa-briefcase w-5 text-gray-400"></i>
+              <span>Works at <span class="font-bold text-gray-800">{{ profile.workplace }}</span></span>
+            </li>
+            <li v-if="profile.education" class="flex items-center gap-3 text-gray-600">
+              <i class="fa-solid fa-graduation-cap w-5 text-gray-400"></i>
+              <span>Studied at <span class="font-bold text-gray-800">{{ profile.education }}</span></span>
+            </li>
+            <li v-if="profile.address" class="flex items-center gap-3 text-gray-600">
+              <i class="fa-solid fa-location-dot w-5 text-gray-400"></i>
+              <span>Lives in <span class="font-bold text-gray-800">{{ profile.address }}</span></span>
+            </li>
+            <li v-if="profile.home" class="flex items-center gap-3 text-gray-600">
+              <i class="fa-solid fa-house w-5 text-gray-400"></i>
+              <span>From <span class="font-bold text-gray-800">{{ profile.home }}</span></span>
+            </li>
+            <li v-if="profile.phone" class="flex items-center gap-3 text-gray-600">
+              <i class="fa-solid fa-phone w-5 text-gray-400"></i>
+              <span>{{ profile.phone }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-900">Friends</h3>
+            <button class="text-[#004182] text-sm font-semibold">See all</button>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div v-for="friend in friends.slice(0, 6)" :key="friend.id" class="text-center">
+              <img :src="friend.profilePicture || defaultProfile" class="w-full aspect-square object-cover rounded-lg border border-gray-100" />
+              <p class="text-[10px] mt-1 font-medium truncate">{{ friend.name }}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="lg:col-span-2 space-y-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-900">Timeline</h3>
+            <div class="flex gap-2">
+                <button class="p-2 hover:bg-gray-100 rounded-full text-gray-400"><i class="fa-solid fa-sliders"></i></button>
+            </div>
+          </div>
+
+          <div v-if="posts.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <i class="fa-solid fa-pen-nib text-2xl"></i>
+            </div>
+            <p class="text-gray-400 font-medium">No posts to show yet</p>
+          </div>
+
+          <div v-else class="space-y-6">
+            <div v-for="post in posts" :key="post.id" class="p-5 rounded-2xl bg-gray-50 border border-gray-100 transition-hover hover:border-blue-100">
+              <div class="flex items-center gap-3 mb-3">
+                 <img :src="profile.profilePicture || defaultProfile" class="w-10 h-10 rounded-full" />
+                 <div>
+                    <p class="font-bold text-gray-900">{{ profile.first_name }} {{ profile.last_name }}</p>
+                    <p class="text-[10px] text-gray-400">{{ formatDate(post.createdAt) }}</p>
+                 </div>
+              </div>
+              <p class="text-gray-700 leading-relaxed">{{ post.content }}</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <Transition name="fade">
+      <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+            <h2 class="text-2xl font-bold text-gray-900">Edit Information</h2>
+            <button @click="showEditModal = false" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400">
+              <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+          </div>
+          
+          <form @submit.prevent="saveProfile" class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">First Name</label>
+                <input v-model="profile.first_name" class="custom-input" placeholder="Enter first name" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Last Name</label>
+                <input v-model="profile.last_name" class="custom-input" placeholder="Enter last name" />
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-gray-500 uppercase ml-1">About Me (Bio)</label>
+              <textarea v-model="profile.bio" rows="3" class="custom-input resize-none" placeholder="Tell us about yourself..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Current City</label>
+                <input v-model="profile.address" class="custom-input" placeholder="City, Country" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Hometown</label>
+                <input v-model="profile.home" class="custom-input" placeholder="Where are you from?" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Workplace</label>
+                <input v-model="profile.workplace" class="custom-input" placeholder="Company name" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Education</label>
+                <input v-model="profile.education" class="custom-input" placeholder="University/School" />
+              </div>
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-500 uppercase ml-1">Phone Number</label>
+                <input v-model="profile.phone" class="custom-input" placeholder="+1 234..." />
+              </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+              <button type="button" @click="showEditModal = false" class="flex-1 px-6 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 transition-all">
+                Cancel
+              </button>
+              <button type="submit" class="flex-1 bg-[#004182] text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:bg-[#003366] transition-all">
+                Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { useRoute } from 'vue-router';
 
-const defaultProfile = "https://www.gravatar.com/avatar?d=mp&s=200";
-const route = useRoute();
+const defaultProfile = "https://ui-avatars.com/api/?background=004182&color=fff&name=User";
+const showEditModal = ref(false);
 
-// Get user from localStorage
 const user = ref(JSON.parse(localStorage.getItem("user")) || {});
-const profile = ref({});
+const profile = ref({
+  first_name: '',
+  last_name: '',
+  bio: '',
+  address: '',
+  phone: '',
+  home: '',
+  workplace: '',
+  education: ''
+});
 const posts = ref([]);
-const friends = ref([]);
+const friends = ref([
+    { id: 1, name: 'Ahmed Ali' },
+    { id: 2, name: 'Sara Smith' },
+    { id: 3, name: 'John Doe' },
+    { id: 4, name: 'Meissa Lane' }
+]);
 
-// Load profile data on mount
 onMounted(async () => {
   if (!user.value.id) return;
-
   try {
     const res = await axios.get(`http://localhost:3000/profil/${user.value.id}`);
-    profile.value = res.data || {};
+    if (res.data) profile.value = res.data;
     
-    // Load posts (implement this endpoint)
-    // const postsRes = await axios.get(`http://localhost:3000/posts/${user.value.id}`);
-    // posts.value = postsRes.data || [];
-    
-    // Load friends (implement this endpoint)
-    // const friendsRes = await axios.get(`http://localhost:3000/friends/${user.value.id}`);
-    // friends.value = friendsRes.data || [];
+    // Fetch your posts and friends here...
   } catch (err) {
     console.error("Error loading profile:", err);
   }
@@ -155,55 +218,53 @@ onMounted(async () => {
 const handleImageUpload = async (event) => {
   const file = event.target.files[0];
   if (!file) return;
-
   const formData = new FormData();
   formData.append('image', file);
 
   try {
-    const res = await axios.post(
-      `http://localhost:3000/profil/upload/${user.value.id}`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-    );
+    const res = await axios.post(`http://localhost:3000/profil/upload/${user.value.id}`, formData);
     profile.value.profilePicture = res.data.profilePicture;
   } catch (err) {
-    console.error("Error uploading image:", err);
     alert("Failed to upload image");
   }
 };
 
 const saveProfile = async () => {
   try {
-    const payload = {
-      ...profile.value,
-      id_user: user.value.id
-    };
-    
+    const payload = { ...profile.value, id_user: user.value.id };
     await axios.post("http://localhost:3000/profil", payload);
-    alert("Profile updated successfully!");
+    showEditModal.value = false; // Close modal on success
+    alert("Profile updated!");
   } catch (err) {
-    console.error("Profile update error:", err);
-    alert("Failed to update profile: " + (err?.response?.data?.message || err.message));
+    alert("Failed to update profile");
   }
 };
 
-const formatDate = (date) => new Date(date).toLocaleDateString();
+const formatDate = (date) => date ? new Date(date).toLocaleDateString() : 'Recently';
 </script>
 
 <style scoped>
-.input {
+.custom-input {
   width: 100%;
-  padding: .55rem;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  background: #fafafa;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+  transition: all 0.2s;
+  font-size: 0.95rem;
 }
-.input:focus {
-  border-color: #2563eb;
+.custom-input:focus {
+  border-color: #004182;
+  background: white;
   outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 65, 130, 0.1);
+}
+
+/* Modal Transitions */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

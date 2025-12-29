@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
@@ -12,7 +14,6 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-require('dotenv').config();
 
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174'],
@@ -70,3 +71,5 @@ io.use((socket, next) => {
 
 require("./socket")(io);
 module.exports = io;
+
+ 

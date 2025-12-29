@@ -7,6 +7,13 @@
     </div>
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+      
+        <div v-if="errorMessage" class="bg-red-200 text-red-600 text-center p-2 rounded-3 rounded-circle rounded-pill text-sm">
+          {{ errorMessage }}
+        </div>
+      
+
       <form @submit.prevent="handleSubmit" class="space-y-6">
         
 
@@ -63,7 +70,7 @@ const handleSubmit = async () => {
       router.push('/')
     }
   } catch (err) {
-    console.error(err.response?.data?.message || err.message)
+    console.log(err.response?.data?.message || err.message)
     errorMessage.value = 'Login failed password or email is incorrect.'
   }
 }

@@ -5,6 +5,10 @@ const Like = require('../model/Like');
 const multer = require('multer');
 
 
+const { protect } = require('../controller/authController');
+
+
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => {
@@ -12,9 +16,10 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
+
 const upload = multer({ storage });
 
-router.post('/post', upload.single('image'), async (req, res) => {
+router.post('/post', protect, upload.single('image'), async (req, res) => {
   try {
     const newPost = new Post({
       content: req.body.content,
@@ -30,7 +35,7 @@ router.post('/post', upload.single('image'), async (req, res) => {
 });
 
 
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const allPosts = await Post.find();
     const alllikes = await Like.find();
@@ -45,7 +50,7 @@ router.get('/', async (req, res) => {
 
 
 
-router.put('/post/:id', upload.single('image'), async (req, res) => {
+router.put('/post/:id', protect, upload.single('image'), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
@@ -62,7 +67,7 @@ router.put('/post/:id', upload.single('image'), async (req, res) => {
   }
 });
 
-router.delete('/post/:id', async (req, res) => {
+router.delete('/post/:id', protect, async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
@@ -73,7 +78,7 @@ router.delete('/post/:id', async (req, res) => {
   }
 });
 
-router.post('/like', async (req, res) => {
+router.post('/like', protect, async (req, res) => {
   try {
     const newLike = new Like({
       id_user: req.body.id_user,

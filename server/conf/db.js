@@ -7,7 +7,7 @@ const connectDB = async () => {
 ;
       
       
- 
+
       mongoose.connect(url)
       .then(()=>{
       console.log("connected with mongodb")

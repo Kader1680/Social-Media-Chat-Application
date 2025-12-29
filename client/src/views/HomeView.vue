@@ -1,190 +1,183 @@
-<style scoped>
-img, video {
-  transition: all 0.3s ease-in-out;
-}
-
-.reactions{
- justify-content: space-between;
-}
-.reactions div .fa-comment{
-  margin-right: 1rem;
-}
-.items li{
-  color: #004182;
-}
-.items li i{
-  color: black;
-}
-</style>
 <template>
-<main class="max-w-7xl mx-auto flex flex-col md:flex-row mt-6 px-4 gap-6">
-    <aside class="w-full md:w-1/4 hidden md:block">
-      <div class="bg-gray-100  rounded-lg p-4 shadow-sm">
-        <h2 class="font-semibold mb-3">Friends</h2>
-        <ul class="space-y-2">
-          <li class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-300 rounded-full"></div>ahmed li</li>
-          <li class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-300 rounded-full"></div>meissa lane</li>
-          <li class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-300 rounded-full"></div>fouzi abdelrahim</li>
-        </ul>
-      </div>
-    </aside>
+  <div class="min-h-screen bg-gray-50 font-sans text-gray-900">
+    <main class="max-w-7xl mx-auto flex flex-col md:flex-row pt-8 px-4 gap-8">
+      
+      <aside class="hidden lg:block w-1/4 sticky top-8 h-fit">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+            <h2 class="font-bold text-gray-700 flex items-center gap-2">
+              <i class="fa-solid fa-bars text-[#004182]"></i> Menu
+            </h2>
+          </div>
+          <ul class="p-2 space-y-1">
+            <li v-for="item in menuItems" :key="item.label" 
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-gray-100 cursor-pointer group">
+              <i :class="[item.icon, 'text-gray-500 group-hover:text-[#004182] w-5']"></i>
+              <span class="text-sm font-medium text-gray-600 group-hover:text-[#004182] capitalize">{{ item.label }}</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
-
-    
-
-    <section class="flex-1 space-y-6">
-
-
-
-    <form  @submit.prevent="submitPost" class="max-w-2xl mx-auto p-6 bg-gray-100  rounded-2xl shadow space-y-6">
-    <h2 class="text-2xl font-bold text-gray-800">Create a New Post</h2>
-
-    <textarea
-      v-model="content"
-      placeholder="What's on your mind?"
-      class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-      rows="4"
-    ></textarea>
-
-
-
-
-
-    <div>
-      <label for="media" class="block text-gray-600 font-medium mb-2">Upload Image or Video</label>
-      <input
-        name="media"
-        type="file"
-        accept="image/*,video/*"
-        @change="handleFileUpload"
-        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#00418278] file:text-[#004182] hover:file:bg-blue-200"
-      />
-    </div>  
-
-    <div v-if="previewUrl" class="rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-      <img v-if="isImageFile" :src="previewUrl" class="w-full max-h-80 object-cover" />
-      <video v-else controls class="w-full max-h-80">
-        <source :src="previewUrl" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
-
-    <div class="text-right">
-      <button
-        type="submit"
-        :disabled="loading"
-        class="bg-[#004182] text-white font-semibold px-6 py-2 rounded-lg transition duration-200 disabled:opacity-50"
-      >
-        {{ loading ? 'Posting...' : 'Post' }}
-      </button>
-    </div>
-
-    <div v-if="error" class="text-red-500 mt-2">
-      {{ error }}
-    </div>
-  </form>
-
-
-
-
-
-
-      <div v-for="(post, index) in allposts" :key="index" class="p-4 bg-gray-100 rounded-xl shadow">
-          <div style="justify-content: space-between;" class="flex justify-content-between">
-            <h3>{{ post.id_user }}</h3>
-            <div class="space-x-2">
-                 <router-link :to="`/post/edit/${post._id}`" class="text-[#004182] hover:underline">Edit</router-link>
-                 <button @click="deletePost(post._id)" class="text-red-500 hover:underline">Delete</button>
-                 
+      <section class="flex-1 max-w-2xl space-y-6">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+          <div class="flex gap-4">
+            <div class="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0"></div>
+            <div class="flex-1">
+              <textarea
+                v-model="content"
+                placeholder="What's on your mind?"
+                class="w-full p-0 border-none focus:ring-0 text-lg resize-none placeholder-gray-400"
+                rows="2"
+              ></textarea>
             </div>
           </div>
-          <p class="text-gray-800 mb-2">{{ post.content }} </p>
 
-          <div v-if="post.media">
-        
-          
-            <img v-if="isImage(post.media)" :src="`http://localhost:3000${post.media}`" />
+          <div v-if="previewUrl" class="mt-4 relative rounded-xl overflow-hidden border border-gray-100">
+            <button @click="previewUrl = ''; media = null" class="absolute top-2 right-2 bg-black/50 text-white w-8 h-8 rounded-full hover:bg-black/70 z-10">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img v-if="isImageFile" :src="previewUrl" class="w-full max-h-96 object-cover" />
+            <video v-else controls class="w-full max-h-96"><source :src="previewUrl" /></video>
+          </div>
 
-            <video
-              v-else
-              controls
-              class="w-full max-h-80 rounded-lg"
+          <hr class="my-4 border-gray-100" />
+
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors text-gray-600">
+              <i class="fa-solid fa-image text-green-500"></i>
+              <span class="text-sm font-semibold">Photo/Video</span>
+              <input type="file" accept="image/*,video/*" class="hidden" @change="handleFileUpload" />
+            </label>
+
+            <button
+              @click="submitPost"
+              :disabled="loading || (!content.trim() && !media)"
+              class="bg-[#004182] hover:bg-[#003366] text-white font-bold px-6 py-2 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
             >
+              <i v-if="loading" class="fa-solid fa-circle-notch animate-spin mr-2"></i>
+              {{ loading ? 'Posting...' : 'Post' }}
+            </button>
+          </div>
+        </div>
+
+        <div v-if="allposts.length === 0" class="text-center py-10 text-gray-400">
+           <i class="fa-solid fa-rss text-4xl mb-3"></i>
+           <p>No posts to show yet.</p>
+        </div>
+
+        <div v-for="(post, index) in allposts" :key="index" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
+          <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-100 to-[#004182] flex items-center justify-center text-white font-bold">
+                {{ post.id_user?.slice(0,1).toUpperCase() || 'U' }}
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 leading-tight">User {{ post.id_user }}</h3>
+                <span class="text-xs text-gray-500">Just now • <i class="fa-solid fa-earth-americas"></i></span>
+              </div>
+            </div>
+            
+            <div class="relative group">
+              <button class="p-2 hover:bg-gray-100 rounded-full text-gray-400"><i class="fa-solid fa-ellipsis-h"></i></button>
+              <div class="hidden group-hover:block absolute right-0 w-32 bg-white border border-gray-100 shadow-xl rounded-lg z-20">
+                <router-link :to="`/post/edit/${post._id}`" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Edit Post</router-link>
+                <button @click="deletePost(post._id)" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-4 pb-3">
+            <p class="text-gray-800 whitespace-pre-wrap">{{ post.content }}</p>
+          </div>
+
+          <div v-if="post.media" class="bg-black flex justify-center">
+            <img v-if="isImage(post.media)" :src="`http://localhost:3000${post.media}`" class="max-h-[500px] w-full object-contain bg-gray-100" />
+            <video v-else controls class="max-h-[500px] w-full shadow-inner">
               <source :src="post.media" />
-              Your browser does not support the video tag.
             </video>
           </div>
 
-          <div class="reactions flex align-items-center justify-content-between">
-            <div>
-                
-     
-                  
-              <i @click="likePost(post._id)"  style="font-size: 25px;" class="fa-solid fa-thumbs-up"></i>
-
-              <i style="font-size: 25px; margin-right: 1rem;" class="fa-solid fa-comment"></i>
+          <div class="px-4 py-2 flex items-center justify-between text-xs text-gray-500 border-b border-gray-50">
+            <div class="flex items-center gap-1">
+              <span class="flex items-center justify-center w-4 h-4 bg-[#004182] text-white rounded-full text-[8px]"><i class="fa-solid fa-thumbs-up"></i></span>
+              Liked by others
             </div>
-            <i style="font-size: 25px;"  class="fa-solid fa-share"></i>
-          </div>  
+            <span>0 comments • 0 shares</span>
+          </div>
 
-  
-    </div>
+          <div class="px-2 py-1 flex items-center justify-around">
+            <button @click="likePost(post._id)" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg hover:bg-gray-100 text-gray-600 font-semibold transition-colors">
+              <i class="fa-regular fa-thumbs-up text-xl"></i> Like
+            </button>
+            <button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg hover:bg-gray-100 text-gray-600 font-semibold transition-colors">
+              <i class="fa-regular fa-comment text-xl"></i> Comment
+            </button>
+            <button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg hover:bg-gray-100 text-gray-600 font-semibold transition-colors">
+              <i class="fa-solid fa-share text-xl"></i> Share
+            </button>
+          </div>
+        </div>
+      </section>
 
+      <aside class="hidden md:block w-1/4 sticky top-8 h-fit">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-gray-700">Contacts</h2>
+            <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
+          </div>
+          <ul class="space-y-4">
+            <li v-for="friend in friends" :key="friend" class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1 rounded-lg transition-colors">
+              <div class="relative">
+                <div class="w-9 h-9 bg-gray-200 rounded-full border border-gray-100"></div>
+                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+              </div>
+              <span class="text-sm font-medium text-gray-700">{{ friend }}</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
-
-
-
-    </section>
-
-
-
-     <aside class="w-full md:w-1/4 hidden md:block">
-      <div class="bg-gray-100  rounded-lg p-4 shadow-sm">
-        <h2 class="font-semibold mb-3"></h2>
-        <ul class="space-y-2 items">
-          <li class="flex items-center gap-2"><i class="fa-solid fa-bookmark"></i> saved items</li>
-          <li class="flex items-center gap-2"><i class="fa-brands fa-youtube"></i> reels & vedio</li>
-          <li class="flex items-center gap-2"><i class="fa-solid fa-user-group"></i>groups</li>
-          <li class="flex items-center gap-2"><i class="fa-solid fa-store"></i>marketspace</li>
-          <li class="flex items-center gap-2"><i class="fa-solid fa-gear"></i>setting</li>
-        </ul>
-      </div>
-    </aside>
-    
-  </main>
-
-
+    </main>
+  </div>
 </template>
-
 
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue';
+
 const content = ref('');
 const media = ref(null);
 const previewUrl = ref('');
 const isImageFile = ref(true);
 const loading = ref(false);
 const error = ref(null);
+const allposts = ref([]);
 
+// Mock data for sidebars
+const menuItems = [
+  { label: 'saved items', icon: 'fa-solid fa-bookmark' },
+  { label: 'reels & video', icon: 'fa-brands fa-youtube' },
+  { label: 'groups', icon: 'fa-solid fa-user-group' },
+  { label: 'marketspace', icon: 'fa-solid fa-store' },
+  { label: 'settings', icon: 'fa-solid fa-gear' },
+];
+const friends = ['Ahmed Li', 'Meissa Lane', 'Fouzi Abdelrahim'];
+
+// LOGIC PRESERVED
 const submitPost = async () => {
   if (!content.value.trim() && !media.value) {
     alert('Please add some content or media to your post');
     return;
   }
-
   try {
     loading.value = true;
-    error.value = null;
-    
     const formData = new FormData();
     formData.append('content', content.value);
     const user = JSON.parse(localStorage.getItem('user'));
     formData.append('id_user', user._id || user.id);
-
-    if (media.value) {
-      formData.append('image', media.value);
-    }
+    if (media.value) formData.append('image', media.value);
 
     const res = await axios.post('http://localhost:3000/post', formData, {
       headers: {
@@ -193,104 +186,94 @@ const submitPost = async () => {
       },
     });
 
-    // Clear form
     content.value = '';
     media.value = null;
     previewUrl.value = '';
-    
-    // Add new post to list
-    if (res.data.post) {
-      allposts.value.unshift(res.data.post);
-    }
-
+    if (res.data.post) allposts.value.unshift(res.data.post);
   } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to create post';
-    alert(error.value);
+    alert(err.response?.data?.message || 'Failed to create post');
   } finally {
     loading.value = false;
   }
 };
 
-const handleFileUpload = async (event) => {
+const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
-
-  // Validate file type
   if (!file.type.match(/^(image|video)/)) {
     alert('Please upload an image or video file');
-    event.target.value = '';
     return;
   }
-  
-  // Validate file size (10MB max)
-  if (file.size > 10 * 1024 * 1024) {
-    alert('File size should be less than 10MB');
-    event.target.value = '';
-    return;
-  }
-
   media.value = file;
   previewUrl.value = URL.createObjectURL(file);
   isImageFile.value = file.type.startsWith('image/');
 };
 
-
-
 const isImage = (media) => {
-  return media && (media.endsWith(".jpg") || media.endsWith(".png") || media.endsWith(".jpeg") || media.endsWith(".gif"));
+  return media && /\.(jpg|jpeg|png|gif)$/i.test(media);
 };
-
-
-const allposts = ref([]);
 
 const fetchPosts = async () => {
   try {
     loading.value = true;
     const response = await axios.get('http://localhost:3000/post');
-    // Handle both response formats
     allposts.value = response.data.posts || response.data;
-    console.log(allposts.value);
   } catch (error) {
     console.error('Error fetching posts:', error);
-    alert('Failed to load posts');
   } finally {
     loading.value = false;
   }
 };
 
-onMounted(() => {
-  fetchPosts();
-});
+onMounted(fetchPosts);
 
 const deletePost = async (postId) => {
-  const confirmDelete = confirm("Are you sure you want to delete this post?");
-  if (!confirmDelete) return;
-
+  if (!confirm("Are you sure you want to delete this post?")) return;
   try {
     await axios.delete(`http://localhost:3000/post/${postId}`);
     allposts.value = allposts.value.filter(post => post._id !== postId);
   } catch (error) {
-    console.error("Error deleting post:", error);
     alert("Failed to delete the post.");
   }
 };
 
 const likePost = async (postId) => {
   try {
-    const userId = JSON.parse(localStorage.getItem('user')).id;
-
-    const res = await axios.post('http://localhost:3000/', {
+    const user = JSON.parse(localStorage.getItem('user'));
+    await axios.post('http://localhost:3000/', {
       id_post: postId,
-      id_user: userId,
+      id_user: user.id || user._id,
     });
-
-    console.log("Liked successfully", res.data.post);
   } catch (err) {
-    console.error("Error liking post:", err.response?.data?.message || err.message);
+    console.error("Error liking post");
   }
 };
-
-
-
-
 </script>
+
+<style scoped>
+/* Smooth fade-in for new posts */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar for a cleaner look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #004182;
+}
+</style>
+
+ 

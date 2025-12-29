@@ -43,10 +43,10 @@ module.exports = function(io) {
                   createdAt: savedMessage.createdAt
               };
 
-               socket.to(data.receiverId).emit("newMessage", messageToSend);
+              socket.to(data.receiverId).emit("newMessage", messageToSend);
               socket.to(data.senderId).emit("newMessage", messageToSend);
 
-               socket.emit("newMessage", messageToSend);
+              socket.emit("newMessage", messageToSend);
 
           } catch (err) {
               console.error("Error sending message:", err);

@@ -1,4 +1,3 @@
-// socket.js (Frontend)
 import { io } from "socket.io-client";
 
 const user = JSON.parse(localStorage.getItem('user')) || null;
