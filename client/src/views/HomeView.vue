@@ -67,14 +67,25 @@
            <p>No posts to show yet.</p>
         </div>
 
+
+        
+       
         <div v-for="(post, index) in allposts" :key="index" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
           <div class="p-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
+
+          
               <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-100 to-[#004182] flex items-center justify-center text-white font-bold">
                 {{ post.id_user?.slice(0,1).toUpperCase() || 'U' }}
               </div>
+
+
               <div>
-                <h3 class="font-bold text-gray-900 leading-tight">User {{ post.id_user }}</h3>
+                
+                <h3 class="font-bold text-gray-900 leading-tight">
+                  {{ post.username }}
+                </h3>
+
                 <span class="text-xs text-gray-500">Just now • <i class="fa-solid fa-earth-americas"></i></span>
               </div>
             </div>
@@ -87,6 +98,11 @@
               </div>
             </div>
           </div>
+
+
+     
+
+
 
           <div class="px-4 pb-3">
             <p class="text-gray-800 whitespace-pre-wrap">{{ post.content }}</p>
@@ -119,6 +135,8 @@
             </button>
           </div>
         </div>
+
+
       </section>
 
       <aside class="hidden md:block w-1/4 sticky top-8 h-fit">
@@ -154,6 +172,14 @@ const isImageFile = ref(true);
 const loading = ref(false);
 const error = ref(null);
 const allposts = ref([]);
+
+const username = ref([]);
+
+
+
+
+
+
 
 // Mock data for sidebars
 const menuItems = [
@@ -216,8 +242,18 @@ const isImage = (media) => {
 const fetchPosts = async () => {
   try {
     loading.value = true;
-    const response = await axios.get('http://localhost:3000/post');
+    const response = await axios.get('http://localhost:3000/');
     allposts.value = response.data.posts || response.data;
+
+    username.value = response.data.nameUser || '';
+
+    console.log(JSON.parse(JSON.stringify(username.value)));
+
+
+
+
+
+    console.log("Fetched posts:", allposts.value);
   } catch (error) {
     console.error('Error fetching posts:', error);
   } finally {
@@ -251,7 +287,6 @@ const likePost = async (postId) => {
 </script>
 
 <style scoped>
-/* Smooth fade-in for new posts */
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out;
 }
@@ -260,7 +295,6 @@ const likePost = async (postId) => {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Custom Scrollbar for a cleaner look */
 ::-webkit-scrollbar {
   width: 6px;
 }

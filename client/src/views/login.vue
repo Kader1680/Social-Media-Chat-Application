@@ -1,42 +1,79 @@
 <template>
-  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-      <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-        login  to your account
-      </h2>
-    </div>
-
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-6 py-12">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-blue-900/10 p-8 md:p-10 border border-gray-100">
       
-        <div v-if="errorMessage" class="bg-red-200 text-red-600 text-center p-2 rounded-3 rounded-circle rounded-pill text-sm">
-          {{ errorMessage }}
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-[#004182] rounded-2xl mb-4 shadow-lg shadow-blue-700/30">
+          <i class="fa-solid fa-bolt-lightning text-white text-3xl"></i>
         </div>
-      
+        <h2 class="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h2>
+        <p class="text-gray-500 mt-2 font-medium">Please enter your details to login</p>
+      </div>
 
-      <form @submit.prevent="handleSubmit" class="space-y-6">
+      <div 
+        v-if="errorMessage" 
+        class="mb-6 flex items-center gap-3 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm animate-shake"
+      >
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p class="font-semibold">{{ errorMessage }}</p>
+      </div>
+
+      <form @submit.prevent="handleSubmit" class="space-y-5">
         
-
-        <div>
-          <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
-          <div class="mt-2 bottom-3">
-            <input style="border: 2px solid blue;" v-model="email" type="email" id="email" required class="block w-full rounded-md px-3 py-1.5 bottom-1 border-warning" />
+        <div class="space-y-1">
+          <label for="email" class="text-xs font-bold text-gray-500 uppercase ml-1">Email Address</label>
+          <div class="relative group">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-[#004182] transition-colors">
+              <i class="fa-solid fa-envelope"></i>
+            </span>
+            <input 
+              v-model="email" 
+              type="email" 
+              id="email" 
+              placeholder="name@company.com"
+              required 
+              class="custom-login-input pl-11"
+            />
           </div>
         </div>
 
-        <div>
-          <label for="password" class="block text-sm/6 font-medium text-gray-900">Password</label>
-          <div class="mt-2">
-            <input style="border: 2px solid blue;" v-model="password" type="password" id="password" required class="block w-full rounded-md px-3 py-1.5" />
+        <div class="space-y-1">
+          <div class="flex justify-between items-center ml-1">
+            <label for="password" class="text-xs font-bold text-gray-500 uppercase">Password</label>
+            <a href="#" class="text-xs font-bold text-[#004182] hover:underline">Forgot?</a>
+          </div>
+          <div class="relative group">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-[#004182] transition-colors">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input 
+              v-model="password" 
+              type="password" 
+              id="password" 
+              placeholder="••••••••"
+              required 
+              class="custom-login-input pl-11"
+            />
           </div>
         </div>
 
-        <div>
-          <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-500">
-            Sign up
+        <div class="pt-2">
+          <button 
+            type="submit" 
+            class="w-full bg-[#004182] hover:bg-[#003366] text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+          >
+            <span>Sign In to Account</span>
+            <i class="fa-solid fa-arrow-right text-sm"></i>
           </button>
         </div>
       </form>
+
+      <p class="mt-8 text-center text-gray-500 text-sm font-medium">
+        Don't have an account? 
+        <router-link to="/register" class="text-[#004182] font-black hover:underline ml-1">
+          Create one now
+        </router-link>
+      </p>
     </div>
   </div>
 </template>
@@ -46,7 +83,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
-const username = ref('')
 const email = ref('')
 const password = ref('')
 const router = useRouter()
@@ -54,24 +90,53 @@ const errorMessage = ref('')
 
 const handleSubmit = async () => {
   try {
+    errorMessage.value = '' // Reset error
     const res = await axios.post('http://localhost:3000/login', {
-      username: username.value,
       email: email.value,
       password: password.value
     })
 
-    
-    localStorage.setItem('token', res.data.token);
-    localStorage.setItem('user', JSON.stringify(res.data.data.user));
-
-
-    if (res.data.status === 'success') {
-     
+    if (res.data.token) {
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.data.user));
       router.push('/')
     }
   } catch (err) {
-    console.log(err.response?.data?.message || err.message)
-    errorMessage.value = 'Login failed password or email is incorrect.'
+    errorMessage.value = err.response?.data?.message || 'Login failed. Incorrect email or password.'
   }
 }
 </script>
+
+<style scoped>
+.custom-login-input {
+  width: 100%;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  padding-right: 1rem;
+  border: 2px solid #f3f4f6;
+  border-radius: 1rem;
+  background-color: #f9fafb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-login-input:focus {
+  outline: none;
+  border-color: #004182;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(0, 65, 130, 0.1);
+}
+
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+</style>

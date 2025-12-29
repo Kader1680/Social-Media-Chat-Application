@@ -3,21 +3,38 @@
     <div class="bg-white shadow-sm">
       <div class="h-48 md:h-64 bg-gradient-to-r from-[#004182] to-blue-400 relative">
         <button class="absolute bottom-4 right-4 bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg backdrop-blur-md text-sm transition-all">
-          <i class="fa-solid fa-camera mr-2"></i> Edit Cover
+          <i class="fa-solid fa-camera mr-2">
+          <input  type="file" accept="image/*" @change="handleCoverChange" />
+
+          </i> Edit Cover
+
         </button>
       </div>
 
       <div class="max-w-6xl mx-auto px-4 pb-6">
         <div class="flex flex-col md:flex-row items-center md:items-end -mt-16 md:-mt-20 gap-6">
           <div class="relative group">
-            <img
+            
+            <!-- <img
               :src="profile.profilePicture || defaultProfile"
               class="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-white shadow-lg object-cover bg-white"
               alt="Profile"
-            />
+            /> -->
+
+            <img
+  :src="profile.avatar 
+    ? `http://localhost:3000${profile.avatar}` 
+    : defaultProfile"
+  class="w-32 h-32 md:w-44 md:h-44 rounded-full"
+/>
+
+
+
             <label class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
               <i class="fa-solid fa-camera text-white text-2xl"></i>
-              <input type="file" @change="handleImageUpload" class="hidden" />
+              <input type="file" accept="image/png,image/jpeg,image/webp" />
+
+              <!-- <input type="file" accept="image/*" @change="handleAvatarChange" class="hidden" /> -->
             </label>
           </div>
 
@@ -193,8 +210,13 @@ const profile = ref({
   phone: '',
   home: '',
   workplace: '',
-  education: ''
+  education: '',
 });
+
+
+const avatarFile = ref(null);
+const coverFile = ref(null);
+
 const posts = ref([]);
 const friends = ref([
     { id: 1, name: 'Ahmed Ali' },
@@ -209,36 +231,76 @@ onMounted(async () => {
     const res = await axios.get(`http://localhost:3000/profil/${user.value.id}`);
     if (res.data) profile.value = res.data;
     
-    // Fetch your posts and friends here...
+    
   } catch (err) {
     console.error("Error loading profile:", err);
   }
 });
 
-const handleImageUpload = async (event) => {
+// const handleImageUpload = async (event) => {
+//   const file = event.target.files[0];
+//   if (!file) return;
+//   const formData = new FormData();
+//   formData.append('image', file);
+
+//   try {
+//     const res = await axios.post(`http://localhost:3000/profil`, formData);
+//     profile.value.profilePicture = res.data.profilePicture;
+//   } catch (err) {
+//     alert("Failed to upload image");
+//   }
+// };
+const handleAvatarChange = (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  const formData = new FormData();
-  formData.append('image', file);
 
-  try {
-    const res = await axios.post(`http://localhost:3000/profil/upload/${user.value.id}`, formData);
-    profile.value.profilePicture = res.data.profilePicture;
-  } catch (err) {
-    alert("Failed to upload image");
-  }
+  avatarFile.value = file;
+  profile.value.avatar = URL.createObjectURL(file);
 };
+
+const handleCoverChange = (event) => {
+  coverFile.value = event.target.files[0];
+};
+
 
 const saveProfile = async () => {
   try {
-    const payload = { ...profile.value, id_user: user.value.id };
-    await axios.post("http://localhost:3000/profil", payload);
-    showEditModal.value = false; // Close modal on success
+    const formData = new FormData();
+
+    formData.append("id_user", user.value.id);
+    formData.append("first_name", profile.value.first_name);
+    formData.append("last_name", profile.value.last_name);
+    formData.append("bio", profile.value.bio);
+    formData.append("address", profile.value.address);
+    formData.append("phone", profile.value.phone);
+    formData.append("home", profile.value.home);
+    formData.append("workplace", profile.value.workplace);
+    formData.append("education", profile.value.education);
+
+    if (avatarFile.value) {
+      formData.append("avatar", avatarFile.value);
+    }
+
+    if (coverFile.value) {
+      formData.append("cover_photo", coverFile.value);
+    }
+
+    await axios.post("http://localhost:3000/profil", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+
+     const res = await axios.get(`http://localhost:3000/profil/${user.value.id}`);
+    profile.value = res.data;
+
+
+    showEditModal.value = false;
     alert("Profile updated!");
   } catch (err) {
+    console.error(err);
     alert("Failed to update profile");
   }
 };
+
 
 const formatDate = (date) => date ? new Date(date).toLocaleDateString() : 'Recently';
 </script>

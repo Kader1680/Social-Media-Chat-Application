@@ -6,6 +6,7 @@ const multer = require('multer');
 
 
 const { protect } = require('../controller/authController');
+const User = require('../model/User');
 
 
 
@@ -35,13 +36,28 @@ router.post('/post', protect, upload.single('image'), async (req, res) => {
 });
 
 
-router.get('/', protect, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const allPosts = await Post.find();
     const alllikes = await Like.find();
 
      
-    res.status(200).json({ posts: allPosts, likes: alllikes });
+    const nameUser = await Promise.all(
+    allPosts.map(async (post) => {
+      const user = await User.findById(post.id_user).select('username');
+        return user ? user.username : 'Unknown';
+      })
+    );
+
+
+    const postsWithUsernames = allPosts.map((post, index) => ({
+      ...post.toObject(),
+      username: nameUser[index],
+    }));  
+
+ 
+     
+    res.status(200).json({ posts: postsWithUsernames, likes: alllikes, nameUser: nameUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching posts' });
