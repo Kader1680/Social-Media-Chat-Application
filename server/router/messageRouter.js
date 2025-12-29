@@ -3,11 +3,14 @@ const express = require('express');
 const router = express.Router();
 const Chat = require('../model/Chat');
 const User = require('../model/User');
+const Friend = require('../model/Friend');
 const { protect } = require('../controller/authController');
 
 router.post('/chat/:friendId', protect, async (req, res) => {
   try {
     const { sender, receiver, content } = req.body;
+
+    
     
     if (!sender || !receiver || !content) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -16,7 +19,6 @@ router.post('/chat/:friendId', protect, async (req, res) => {
     const newMessage = new Chat({ sender, receiver, content });
     await newMessage.save();
     
-    // Format response to match frontend expectations
     const response = {
       _id: newMessage._id,
       senderId: newMessage.sender,
@@ -32,14 +34,19 @@ router.post('/chat/:friendId', protect, async (req, res) => {
   }
 });
 
-// GET - Fetch messages between two users
 router.get('/chat/:friendId', protect, async (req, res) => {
   try {
-    // Get userId from authenticated user
     const userId = req.user._id;
     const friendId = req.params.friendId;
-    
-    console.log('Fetching messages between:', userId, 'and', friendId);
+
+    // ✅ FIX: await + lean
+    const friend = await User.findById(friendId)
+      .select('username email')
+      .lean();
+
+    if (!friend) {
+      return res.status(404).json({ message: 'Friend not found' });
+    }
 
     const messages = await Chat.find({
       $or: [
@@ -48,15 +55,17 @@ router.get('/chat/:friendId', protect, async (req, res) => {
       ]
     }).sort({ createdAt: 1 });
 
-    console.log('Found messages:', messages.length);
-    res.json(messages);
+    res.json({
+      friend,
+      messages
+    });
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET - Fetch all users (friends list)
+
 router.get("/chat", protect, async (req, res) => {
   try {
     console.log("Fetching users for request by user:", req.user?._id);

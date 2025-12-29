@@ -13,7 +13,7 @@
           </div>
           
           <div>
-            <h2 class="font-bold text-gray-800 leading-tight">Friend: {{ friendId }}</h2>
+            <h2 class="font-bold text-gray-800 leading-tight"> {{ friend }}</h2>
             <div class="flex items-center gap-1.5">
               <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span class="text-xs text-gray-500 font-medium">Active Now</span>
@@ -45,7 +45,7 @@
             ]"
           >
             <span v-if="msg.sender !== userId" class="text-[10px] font-bold block mb-1 opacity-50 uppercase">
-              {{ friendId }}
+              {{ friend }}
             </span>
 
             <p class="leading-relaxed">{{ msg.content }}</p>
@@ -107,8 +107,11 @@ import socket from '../socket';
 const messages = ref([]);
 const newMessage = ref('');
 const route = useRoute();
+const friend = ref(null);
+
 
 const friendId = route.params.friendId;
+
 const _user = JSON.parse(localStorage.getItem('user')) || {};
 const userId = _user._id || _user.id || '';
 
@@ -128,17 +131,42 @@ const scrollToBottom = () => {
   }, 100);
 };
 
+// const loadMessages = async () => {
+//   try {
+//     const response = await axios.get(`http://localhost:3000/chat/${friendId}`, {
+//       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+//     });
+//     messages.value = response.data.map(normalizeMessage);
+//     scrollToBottom();
+//   } catch (error) {
+//     console.error('Failed to load messages:', error);
+//   }
+// };
+
+
 const loadMessages = async () => {
   try {
-    const response = await axios.get(`http://localhost:3000/chat/${friendId}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    });
-    messages.value = response.data.map(normalizeMessage);
+    const response = await axios.get(
+      `http://localhost:3000/chat/${friendId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+
+    friend.value = response.data.friend.username;
+    
+ 
+    messages.value = response.data.messages.map(normalizeMessage);
+
     scrollToBottom();
   } catch (error) {
     console.error('Failed to load messages:', error);
   }
 };
+
+
 
 const normalizeMessage = (m) => {
   return {
